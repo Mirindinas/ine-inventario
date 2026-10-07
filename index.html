@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIAT · Sistema de Inventario Tecnológico — INE Veracruz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<style>
+:root{
+  --primary:#B0124E;
+  --primary-dark:#7A0C36;
+  --primary-light:#E8417F;
+  --ink:#14111A;
+  --muted:#6B6475;
+  --line:#E7E3EC;
+  --bg:#F7F5FA;
+  --white:#FFFFFF;
+  --ok:#16A34A;
+  --danger:#DC2626;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  display:flex;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ================= PANEL IZQUIERDO ================= */
+.hero{
+  flex:1.15;
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(135deg, rgba(176,18,78,.72) 0%, rgba(122,12,54,.68) 45%, rgba(42,6,20,.82) 100%), url('img/imagen_ine_fondo_index.jpg') center / cover no-repeat;
+  color:#fff;
+  padding:56px 64px;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+/* Rejilla sutil */
+.hero::before{
+  content:"";
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);
+  background-size:48px 48px;
+  mask-image:radial-gradient(ellipse at 30% 30%,#000 30%,transparent 75%);
+  -webkit-mask-image:radial-gradient(ellipse at 30% 30%,#000 30%,transparent 75%);
+}
+/* Orbes animados */
+.orb{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55;animation:float 14s ease-in-out infinite}
+.orb.o1{width:380px;height:380px;background:#FF4F8B;top:-120px;right:-80px}
+.orb.o2{width:300px;height:300px;background:#6D28D9;bottom:-100px;left:-60px;animation-delay:-5s}
+.orb.o3{width:200px;height:200px;background:#F59E0B;bottom:30%;right:15%;opacity:.25;animation-delay:-9s}
+@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-25px)}}
+
+.hero > *{position:relative;z-index:2}
+
+.brand{display:flex;align-items:center;gap:14px}
+.brand-mark{
+  width:64px;height:64px;border-radius:0;background:none !important;border:0 !important;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.28);
+  backdrop-filter:blur(8px);
+  display:grid;place-items:center;
+  font-weight:800;font-size:15px;letter-spacing:.5px;
+}
+.brand-text strong{display:block;font-size:15px;font-weight:700;letter-spacing:.5px}
+.brand-mark img{width:100%;height:100%;object-fit:contain;padding:6px}
+.brand-text span{font-size:12px;opacity:.7}
+
+.hero-body{max-width:520px}
+.chip{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 14px;border-radius:999px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);
+  font-size:12px;font-weight:600;letter-spacing:.3px;
+  margin-bottom:22px;
+}
+.chip .dot{width:8px;height:8px;border-radius:50%;background:#4ADE80;box-shadow:0 0 0 4px rgba(74,222,128,.25);animation:pulse 2s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(74,222,128,0)}}
+
+.hero h1{font-size:42px;line-height:1.12;font-weight:800;letter-spacing:-1px;margin-bottom:16px}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#FFD1E3,#FFFFFF);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p.lead{font-size:15px;line-height:1.65;opacity:.78;margin-bottom:34px}
+
+.features{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.feature{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:14px;border-radius:14px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.14);
+  backdrop-filter:blur(6px);
+  transition:transform .25s, background .25s;
+}
+.feature:hover{transform:translateY(-3px);background:rgba(255,255,255,.13)}
+.feature i{
+  width:34px;height:34px;border-radius:10px;flex-shrink:0;
+  display:grid;place-items:center;font-size:14px;
+  background:rgba(255,255,255,.16);
+}
+.feature b{display:block;font-size:13px;font-weight:700}
+.feature small{font-size:11.5px;opacity:.7}
+
+.stats{display:flex;gap:28px;padding-top:26px;border-top:1px solid rgba(255,255,255,.15)}
+.stat b{display:block;font-size:26px;font-weight:800;letter-spacing:-.5px}
+.stat span{font-size:12px;opacity:.7}
+
+/* ================= PANEL DERECHO ================= */
+.auth{
+  width:520px;
+  background:var(--white);
+  display:flex;flex-direction:column;justify-content:center;
+  padding:56px 64px;
+  position:relative;
+}
+.auth-inner{animation:rise .7s cubic-bezier(.2,.8,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+
+.auth h2{font-size:28px;font-weight:800;letter-spacing:-.6px;margin-bottom:8px}
+.auth .sub{color:var(--muted);font-size:14px;margin-bottom:32px;line-height:1.55}
+
+/* Selector de rol */
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:5px;background:var(--bg);border-radius:12px;margin-bottom:26px}
+.roles input{display:none}
+.roles label{
+  text-align:center;padding:9px 6px;border-radius:9px;
+  font-size:12.5px;font-weight:600;color:var(--muted);
+  cursor:pointer;transition:all .2s;
+}
+.roles label i{margin-right:5px}
+.roles input:checked + label{background:var(--white);color:var(--primary);box-shadow:0 2px 8px rgba(20,17,26,.08)}
+
+.field{margin-bottom:18px}
+.field label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}
+.control{
+  position:relative;display:flex;align-items:center;
+  border:1.5px solid var(--line);border-radius:12px;
+  background:#fff;transition:border-color .2s, box-shadow .2s;
+}
+.control:focus-within{border-color:var(--primary);box-shadow:0 0 0 4px rgba(176,18,78,.10)}
+.control.error{border-color:var(--danger);box-shadow:0 0 0 4px rgba(220,38,38,.08)}
+.control > i{position:absolute;left:15px;color:#A39CAD;font-size:14px;transition:color .2s}
+.control:focus-within > i{color:var(--primary)}
+.control input{
+  width:100%;border:0;outline:0;background:transparent;
+  padding:14px 44px 14px 42px;font:inherit;font-size:14px;color:var(--ink);
+}
+.control input::placeholder{color:#B5AFBE}
+.toggle{position:absolute;right:12px;background:none;border:0;color:#A39CAD;cursor:pointer;padding:6px;font-size:14px}
+.toggle:hover{color:var(--primary)}
+.hint{font-size:12px;color:var(--danger);margin-top:6px;display:none}
+.hint.show{display:block}
+
+.row{display:flex;justify-content:space-between;align-items:center;margin:4px 0 26px}
+.check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer}
+.check input{width:16px;height:16px;accent-color:var(--primary)}
+.link{font-size:13px;font-weight:600;color:var(--primary);text-decoration:none}
+.link:hover{text-decoration:underline}
+
+.btn{
+  width:100%;border:0;cursor:pointer;
+  padding:15px;border-radius:12px;
+  font:inherit;font-size:15px;font-weight:700;color:#fff;
+  background:linear-gradient(135deg,var(--primary-light) 0%,var(--primary) 50%,var(--primary-dark) 100%);
+  background-size:200% 200%;
+  box-shadow:0 10px 24px -8px rgba(176,18,78,.55);
+  transition:transform .15s, box-shadow .25s, background-position .4s;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+}
+.btn:hover{background-position:100% 0;transform:translateY(-1px);box-shadow:0 14px 30px -8px rgba(176,18,78,.65)}
+.btn:active{transform:translateY(0)}
+.btn .spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
+.btn.loading .spinner{display:block}
+.btn.loading .label{opacity:.85}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.secure{
+  display:flex;align-items:center;gap:10px;
+  margin-top:22px;padding:12px 14px;border-radius:12px;
+  background:#F4FBF6;border:1px solid #D7F0DE;
+  font-size:12px;color:#256B3C;
+}
+
+.foot{margin-top:34px;padding-top:20px;border-top:1px solid var(--line);font-size:11.5px;color:#9C95A6;text-align:center;line-height:1.7}
+
+/* Toast */
+.toast{
+  position:fixed;top:24px;right:24px;z-index:50;
+  display:flex;align-items:center;gap:12px;
+  padding:14px 18px;border-radius:12px;
+  background:var(--ink);color:#fff;font-size:13.5px;
+  box-shadow:0 12px 30px rgba(0,0,0,.2);
+  transform:translateY(-20px);opacity:0;pointer-events:none;
+  transition:all .35s cubic-bezier(.2,.8,.2,1);
+}
+.toast.show{transform:none;opacity:1}
+.toast i{color:#4ADE80}
+
+/* Responsive */
+@media (max-width:1100px){.hero{padding:44px}.hero h1{font-size:34px}.auth{width:460px;padding:48px}}
+@media (max-width:900px){
+  body{flex-direction:column}
+  .hero{padding:32px 28px;flex:none}
+  .hero-body .features,.stats{display:none}
+  .hero h1{font-size:28px}
+  .auth{width:100%;padding:36px 24px}
+}
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+</head>
+<body>
+
+<!-- ============ PANEL IZQUIERDO ============ -->
+<section class="hero">
+  <span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span>
+
+  <div class="brand">
+    <div class="brand-mark"><img src="img/logo-ine.png" alt="Logo INE"></div>
+    <div class="brand-text">
+      <strong>INSTITUTO NACIONAL ELECTORAL</strong>
+      <span>Estado de Veracruz</span>
+    </div>
+  </div>
+
+  <div class="hero-body">
+    
+    <h1>Control total de tu<br><em>inventario tecnológico</em></h1>
+    <p class="lead">Centraliza el registro, la asignación y los resguardos digitales del equipo de cómputo de los Módulos de Atención Ciudadana desde cualquier lugar.</p>
+
+    <div class="features">
+      <div class="feature"><i class="fas fa-cloud-arrow-up"></i><div><b>Centralizado</b><small>Un solo inventario en la nube</small></div></div>
+      <div class="feature"><i class="fas fa-qrcode"></i><div><b>Código QR</b><small>Identificación inmediata</small></div></div>
+      <div class="feature"><i class="fas fa-file-signature"></i><div><b>Resguardos digitales</b><small>Sin papel, con trazabilidad</small></div></div>
+      <div class="feature"><i class="fas fa-user-shield"></i><div><b>Acceso por roles</b><small>Conforme a la LGPDPPSO</small></div></div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b data-count="67">0</b><span>Módulos</span></div>
+    <div class="stat"><b data-count="1271">0</b><span>Activos</span></div>
+    <div class="stat"><b data-count="205">0</b><span>Estaciones</span></div>
+  </div>
+</section>
+
+<!-- ============ PANEL DERECHO ============ -->
+<main class="auth">
+  <div class="auth-inner">
+    <h2>Iniciar sesión</h2>
+    <p class="sub">Ingresa con tu cuenta institucional para acceder al Sistema de Inventario Tecnológico.</p>
+
+    <div class="roles">
+      <input type="radio" name="rol" id="r1" checked><label for="r1"><i class="fas fa-user-gear"></i>Admin</label>
+      <input type="radio" name="rol" id="r2"><label for="r2"><i class="fas fa-magnifying-glass"></i>Auditor</label>
+      <input type="radio" name="rol" id="r3"><label for="r3"><i class="fas fa-user"></i>Usuario</label>
+    </div>
+
+    <form id="loginForm" novalidate>
+      <div class="field">
+        <label for="email">Correo institucional</label>
+        <div class="control" id="cEmail">
+          <i class="fas fa-envelope"></i>
+          <input type="email" id="email" placeholder="nombre.apellido@ine.mx" autocomplete="username">
+        </div>
+        <div class="hint" id="hEmail">Ingresa un correo válido.</div>
+      </div>
+
+      <div class="field">
+        <label for="pass">Contraseña</label>
+        <div class="control" id="cPass">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="pass" placeholder="••••••••" autocomplete="current-password">
+          <button type="button" class="toggle" id="togglePass" aria-label="Mostrar contraseña"><i class="fas fa-eye"></i></button>
+        </div>
+        <div class="hint" id="hPass">La contraseña debe tener al menos 6 caracteres.</div>
+      </div>
+
+      <div class="row">
+        <label class="check"><input type="checkbox"> Recordar sesión</label>
+        <a href="#" class="link">¿Olvidaste tu contraseña?</a>
+      </div>
+
+      <button type="submit" class="btn" id="btnLogin">
+        <span class="spinner"></span>
+        <span class="label">Ingresar al sistema</span>
+        <i class="fas fa-arrow-right"></i>
+      </button>
+    </form>
+
+    <div class="secure">
+      <i class="fas fa-shield-halved"></i>
+      Conexión cifrada (HTTPS). Tus datos personales están protegidos conforme a la LGPDPPSO.
+    </div>
+
+    <div class="foot">
+      INE Veracruz © 2026<br>
+      Moreno Sánchez Alan Rafael
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"><i class="fas fa-circle-check"></i><span>Acceso concedido. Redirigiendo…</span></div>
+
+<script>
+// Mostrar / ocultar contraseña
+document.getElementById('togglePass').addEventListener('click', function(){
+  const p = document.getElementById('pass');
+  const i = this.querySelector('i');
+  const show = p.type === 'password';
+  p.type = show ? 'text' : 'password';
+  i.className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+});
+
+// Contadores animados
+document.querySelectorAll('[data-count]').forEach(el=>{
+  const target = +el.dataset.count, dur = 1400, start = performance.now();
+  const step = t=>{
+    const k = Math.min((t-start)/dur,1), e = 1-Math.pow(1-k,3);
+    el.textContent = Math.round(target*e).toLocaleString('es-MX');
+    if(k<1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+});
+
+// Inicio de sesión con Supabase
+document.getElementById('loginForm').addEventListener('submit', async function (e) {
+  e.preventDefault();
+  const email = document.getElementById('email').value.trim();
+  const pass  = document.getElementById('pass').value;
+  const okEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const okPass  = pass.length >= 6;
+
+  document.getElementById('cEmail').classList.toggle('error', !okEmail);
+  document.getElementById('hEmail').classList.toggle('show', !okEmail);
+  document.getElementById('cPass').classList.toggle('error', !okPass);
+  const hPass = document.getElementById('hPass');
+  hPass.textContent = 'La contraseña debe tener al menos 6 caracteres.';
+  hPass.classList.toggle('show', !okPass);
+  if (!okEmail || !okPass) return;
+
+  const btn = document.getElementById('btnLogin');
+  btn.classList.add('loading');
+  btn.querySelector('.label').textContent = 'Verificando…';
+
+  const { error } = await db.auth.signInWithPassword({ email, password: pass });
+
+  if (error) {
+    btn.classList.remove('loading');
+    btn.querySelector('.label').textContent = 'Ingresar al sistema';
+    document.getElementById('cPass').classList.add('error');
+    console.error(error);
+    hPass.textContent = 'Error: ' + error.message;
+    hPass.classList.add('show');
+    return;
+  }
+
+  document.getElementById('toast').classList.add('show');
+  setTimeout(() => location.href = 'dashboard.html', 700);
+});
+</script>
+</body>
+</html>

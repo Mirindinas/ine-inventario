@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventario · INE Veracruz</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<style>
+:root{--primary:#B0124E;--primary-dark:#7A0C36;--primary-light:#E8417F;--ink:#14111A;--muted:#6B6475;--line:#ECE8F0;--bg:#F7F5FA;--ok:#16A34A;--warn:#D97706;--danger:#DC2626;--info:#2563EB;--sidebar:260px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+a{text-decoration:none;color:inherit}button{font:inherit;cursor:pointer}
+
+/* Sidebar */
+.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);z-index:40;background:radial-gradient(140% 80% at 0% 0%,#C2185B 0%,#7A0C36 50%,#2A0614 100%);color:#fff;display:flex;flex-direction:column;padding:22px 16px;transition:transform .3s}
+.sb-brand{display:flex;align-items:center;gap:12px;padding:6px 8px 22px;border-bottom:1px solid rgba(255,255,255,.12)}
+.sb-mark{width:56px;height:56px;display:grid;place-items:center;flex-shrink:0}
+.sb-mark img{width:100%;height:100%;object-fit:contain}
+.sb-brand strong{display:block;font-size:14px}.sb-brand span{font-size:11.5px;opacity:.7}
+.sb-section{font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;opacity:.5;margin:22px 12px 8px}
+.sb-link{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-size:13.5px;font-weight:500;color:rgba(255,255,255,.78);transition:all .2s;margin-bottom:2px}
+.sb-link i{width:18px;text-align:center;font-size:14px}
+.sb-link:hover{background:rgba(255,255,255,.09);color:#fff}
+.sb-link.active{background:rgba(255,255,255,.16);color:#fff;font-weight:600;box-shadow:inset 3px 0 0 #fff}
+.sb-link .count{margin-left:auto;font-size:11px;background:rgba(255,255,255,.18);padding:2px 8px;border-radius:999px}
+.sb-user{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#FFD1E3,#fff);color:var(--primary);display:grid;place-items:center;font-weight:800;font-size:13px;flex-shrink:0}
+.sb-user strong{display:block;font-size:13px}.sb-user span{font-size:11px;opacity:.7}.sb-user a{margin-left:auto;opacity:.7}
+
+/* Main */
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:16px;padding:16px 32px;background:rgba(247,245,250,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.menu-btn{display:none;border:1px solid var(--line);background:#fff;width:40px;height:40px;border-radius:10px}
+.crumbs{font-size:12.5px;color:var(--muted)}.crumbs b{color:var(--primary)}
+.page-title h1{font-size:20px;font-weight:800;letter-spacing:-.4px}
+.top-actions{margin-left:auto;display:flex;gap:10px}
+.content{padding:28px 32px 40px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:11px;padding:11px 18px;font-size:13.5px;font-weight:700;transition:all .2s}
+.btn-primary{background:linear-gradient(135deg,var(--primary-light),var(--primary));color:#fff;box-shadow:0 8px 18px -8px rgba(176,18,78,.6)}
+.btn-primary:hover{transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.btn-light{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn-light:hover{border-color:var(--primary);color:var(--primary)}
+.btn-danger{background:#fff;color:var(--danger);border:1px solid #F5C2C2}
+.btn-danger:hover{background:var(--danger);color:#fff}
+
+/* Resumen */
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.sum{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .2s}
+.sum:hover,.sum.on{border-color:var(--primary);box-shadow:0 0 0 4px rgba(176,18,78,.07)}
+.sum i{width:40px;height:40px;border-radius:11px;display:grid;place-items:center}
+.sum b{font-size:20px;font-weight:800;display:block}.sum span{font-size:12px;color:var(--muted)}
+.c1{background:#FDECF3;color:var(--primary)}.c2{background:#ECFDF3;color:var(--ok)}.c3{background:#FFF7ED;color:var(--warn)}.c4{background:#FEF2F2;color:var(--danger)}
+
+/* Filtros y tabla */
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px}
+.filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:10px;margin-bottom:16px}
+.search{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:11px;padding:0 14px}
+.search:focus-within{border-color:var(--primary)}
+.search i{color:#A39CAD;font-size:13px}
+.search input{border:0;outline:0;padding:11px 0;width:100%;font:inherit;font-size:13.5px}
+.select{border:1.5px solid var(--line);border-radius:11px;padding:10px 12px;font:inherit;font-size:13px;background:#fff;outline:0;color:var(--ink)}
+.select:focus{border-color:var(--primary)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;min-height:4px}
+.chip{display:inline-flex;align-items:center;gap:8px;background:#FDECF3;color:var(--primary);padding:6px 12px;border-radius:999px;font-size:12px;font-weight:600}
+.chip button{border:0;background:none;color:inherit}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700;padding:12px 14px;background:var(--bg);white-space:nowrap;cursor:pointer;user-select:none}
+th:first-child{border-radius:10px 0 0 10px}th:last-child{border-radius:0 10px 10px 0;cursor:default}
+th i{margin-left:5px;opacity:.4}th.sorted i{opacity:1;color:var(--primary)}
+td{padding:13px 14px;border-bottom:1px solid var(--line);vertical-align:middle;white-space:nowrap}
+tbody tr{cursor:pointer;transition:background .15s}
+tbody tr:hover td{background:#FCFBFD}
+.asset{display:flex;align-items:center;gap:12px}
+.asset-ico{width:36px;height:36px;border-radius:10px;background:var(--bg);display:grid;place-items:center;color:var(--primary)}
+.asset strong{display:block;font-size:13.5px}.asset small{color:var(--muted);font-size:12px}
+.mono{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;color:#4B4556}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;font-size:12px;font-weight:600}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.p-ok{background:#ECFDF3;color:var(--ok)}.p-warn{background:#FFF7ED;color:var(--warn)}.p-bad{background:#FEF2F2;color:var(--danger)}
+.res{font-size:12px;font-weight:600}.res.si{color:var(--ok)}.res.no{color:var(--danger)}
+.ra{width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--muted);font-size:12.5px}
+.ra:hover{background:var(--ink);color:#fff;border-color:transparent}
+.empty{text-align:center;padding:50px;color:var(--muted);display:none}
+.empty i{font-size:28px;display:block;margin-bottom:10px}
+.pager{display:flex;justify-content:space-between;align-items:center;margin-top:16px;flex-wrap:wrap;gap:12px;font-size:13px;color:var(--muted)}
+.pages{display:flex;gap:6px}
+.pages button{min-width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:#fff;font-weight:600;font-size:13px;color:var(--ink)}
+.pages button.on{background:var(--primary);color:#fff;border-color:var(--primary)}
+.pages button:disabled{opacity:.4;cursor:not-allowed}
+
+/* Panel de detalle */
+.drawer-bg{position:fixed;inset:0;background:rgba(20,17,26,.4);backdrop-filter:blur(3px);z-index:60;opacity:0;pointer-events:none;transition:opacity .25s}
+.drawer-bg.show{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;height:100vh;width:460px;max-width:100%;background:#fff;z-index:61;transform:translateX(100%);transition:transform .35s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+.drawer.show{transform:none}
+.d-head{padding:22px 24px;border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:flex-start}
+.d-head .asset-ico{width:48px;height:48px;font-size:18px}
+.d-head h3{font-size:17px;font-weight:800}.d-head p{font-size:12.5px;color:var(--muted);margin-top:4px}
+.close{margin-left:auto;border:0;background:var(--bg);width:34px;height:34px;border-radius:10px;color:var(--muted);flex-shrink:0}
+.d-body{padding:22px 24px;overflow:auto;flex:1}
+.tabs{display:flex;gap:4px;background:var(--bg);padding:4px;border-radius:11px;margin-bottom:20px}
+.tabs button{flex:1;border:0;background:none;padding:8px;border-radius:8px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.tabs button.on{background:#fff;color:var(--primary);box-shadow:0 2px 6px rgba(0,0,0,.06)}
+.kv{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.kv div{background:var(--bg);border-radius:12px;padding:12px 14px}
+.kv small{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.kv b{font-size:13.5px;font-weight:600;word-break:break-word}
+.kv .full{grid-column:1/-1}
+.timeline{position:relative;padding-left:22px}
+.timeline::before{content:"";position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--line)}
+.tl{position:relative;margin-bottom:18px}
+.tl::before{content:"";position:absolute;left:-21px;top:4px;width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid var(--primary)}
+.tl b{font-size:13px;display:block}.tl small{font-size:11.5px;color:#A39CAD}
+.qr-center{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+#dQR{padding:16px;border:1px dashed var(--line);border-radius:16px}
+.d-foot{padding:16px 24px;border-top:1px solid var(--line);display:flex;gap:10px}
+.d-foot .btn{flex:1;justify-content:center}
+
+/* Formulario */
+.overlay{position:fixed;inset:0;background:rgba(20,17,26,.45);backdrop-filter:blur(4px);z-index:70;display:none;align-items:center;justify-content:center;padding:20px}
+.overlay.show{display:flex}
+.modal{background:#fff;border-radius:20px;width:100%;max-width:600px;max-height:92vh;overflow:auto;animation:pop .3s cubic-bezier(.2,.8,.2,1)}
+@keyframes pop{from{transform:translateY(16px);opacity:0}}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--line)}
+.modal-head h3{font-size:17px;font-weight:800}
+.modal-body{padding:20px 24px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid .full{grid-column:1/-1}
+.f label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px}
+.f label .req{color:var(--danger)}
+.f input,.f select,.f textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;font:inherit;font-size:13.5px;outline:0;background:#fff}
+.f textarea{resize:vertical;min-height:70px}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(176,18,78,.08)}
+.form-error{display:none;margin-top:14px;padding:10px 12px;border-radius:10px;background:#FEF2F2;color:var(--danger);font-size:13px}
+.form-error.show{display:block}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid var(--line)}
+
+/* Aviso */
+.toast{position:fixed;bottom:24px;right:24px;z-index:80;display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:12px;background:var(--ink);color:#fff;font-size:13.5px;box-shadow:0 12px 30px rgba(0,0,0,.2);transform:translateY(20px);opacity:0;pointer-events:none;transition:all .35s;max-width:420px}
+.toast.show{transform:none;opacity:1}.toast i{color:#4ADE80}.toast.err i{color:#F87171}
+
+@media (max-width:1200px){.filters{grid-template-columns:1fr 1fr}.summary{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.main{margin-left:0}.menu-btn{display:grid;place-items:center}.content,.topbar{padding-left:18px;padding-right:18px}.top-actions .btn span{display:none}}
+@media (max-width:560px){.filters,.summary,.form-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-mark"><img src="img/logo-ine.png" alt="Logo INE"></div>
+    <div><strong>INE Veracruz</strong><span>Inventario Tecnológico</span></div>
+  </div>
+  <div class="sb-section">General</div>
+  <a href="dashboard.html" class="sb-link"><i class="fas fa-grip"></i>Dashboard</a>
+  <a href="inventario.html" class="sb-link active"><i class="fas fa-laptop"></i>Inventario<span class="count" id="sbCount">0</span></a>
+  <a href="#" class="sb-link"><i class="fas fa-building"></i>Módulos</a>
+  <a href="responsables.html" class="sb-link"><i class="fas fa-users"></i>Responsables</a>
+  <div class="sb-section">Gestión</div>
+  <a href="resguardos.html" class="sb-link"><i class="fas fa-file-signature"></i>Resguardos</a>
+  <a href="#" class="sb-link"><i class="fas fa-qrcode"></i>Códigos QR</a>
+  <a href="#" class="sb-link"><i class="fas fa-clock-rotate-left"></i>Historial</a>
+  <a href="#" class="sb-link"><i class="fas fa-chart-pie"></i>Reportes</a>
+  <div class="sb-section">Sistema</div>
+  <a href="#" class="sb-link"><i class="fas fa-user-shield"></i>Usuarios y roles</a>
+  <a href="#" class="sb-link"><i class="fas fa-gear"></i>Configuración</a>
+  <div class="sb-user">
+    <div class="avatar">—</div>
+    <div><strong>Cargando…</strong><span>Rol: —</span></div>
+    <a href="#" onclick="cerrarSesion()" title="Cerrar sesión"><i class="fas fa-arrow-right-from-bracket"></i></a>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+    <div class="page-title">
+      <div class="crumbs">Inicio / <b>Inventario</b></div>
+      <h1>Inventario de activos</h1>
+    </div>
+    <div class="top-actions">
+      <button class="btn btn-light" id="btnExport"><i class="fas fa-file-csv"></i><span>Exportar</span></button>
+      <button class="btn btn-primary" id="btnAdd"><i class="fas fa-plus"></i><span>Registrar activo</span></button>
+    </div>
+  </header>
+
+  <section class="content">
+    <div class="summary">
+      <div class="sum on" data-st=""><i class="fas fa-boxes-stacked c1"></i><div><b id="sTotal">0</b><span>Total</span></div></div>
+      <div class="sum" data-st="Operativo"><i class="fas fa-circle-check c2"></i><div><b id="sOk">0</b><span>Operativos</span></div></div>
+      <div class="sum" data-st="Mantenimiento"><i class="fas fa-screwdriver-wrench c3"></i><div><b id="sWarn">0</b><span>Mantenimiento</span></div></div>
+      <div class="sum" data-st="Baja"><i class="fas fa-ban c4"></i><div><b id="sBad">0</b><span>Baja</span></div></div>
+    </div>
+
+    <div class="panel">
+      <div class="filters">
+        <div class="search"><i class="fas fa-magnifying-glass"></i><input id="q" placeholder="Buscar por folio, serie, marca o responsable…"></div>
+        <select class="select" id="fTipo"><option value="">Tipo de equipo</option></select>
+        <select class="select" id="fMod"><option value="">Módulo</option></select>
+        <select class="select" id="fRes"><option value="">Resguardo</option><option>Con resguardo</option><option>Sin resguardo</option></select>
+        <button class="btn btn-light" id="btnClear" title="Limpiar filtros"><i class="fas fa-rotate-left"></i></button>
+      </div>
+      <div class="chips" id="chips"></div>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th data-k="folio">Folio <i class="fas fa-sort"></i></th>
+            <th data-k="tipo">Activo <i class="fas fa-sort"></i></th>
+            <th data-k="serie">No. de serie <i class="fas fa-sort"></i></th>
+            <th data-k="modulo">Módulo <i class="fas fa-sort"></i></th>
+            <th data-k="resp">Responsable <i class="fas fa-sort"></i></th>
+            <th data-k="resguardo">Resguardo <i class="fas fa-sort"></i></th>
+            <th data-k="estado">Estado <i class="fas fa-sort"></i></th>
+            <th></th>
+          </tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="empty" id="empty"></div>
+      </div>
+
+      <div class="pager">
+        <div>Mostrar
+          <select class="select" id="perPage" style="padding:6px 8px;margin:0 6px"><option>10</option><option selected>15</option><option>25</option><option>50</option></select>
+          · <span id="info">—</span>
+        </div>
+        <div class="pages" id="pages"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ PANEL DE DETALLE ============ -->
+<div class="drawer-bg" id="drawerBg"></div>
+<aside class="drawer" id="drawer">
+  <div class="d-head">
+    <div class="asset-ico" id="dIco"><i class="fas fa-box"></i></div>
+    <div><h3 id="dTitle">—</h3><p id="dSub">—</p></div>
+    <button class="close" id="dClose"><i class="fas fa-xmark"></i></button>
+  </div>
+  <div class="d-body">
+    <div class="tabs">
+      <button class="on" data-tab="info">Información</button>
+      <button data-tab="hist">Historial</button>
+      <button data-tab="qr">Código QR</button>
+    </div>
+    <div id="tab-info"></div>
+    <div id="tab-hist" style="display:none"></div>
+    <div id="tab-qr" style="display:none"><div class="qr-center"><div id="dQR"></div><p class="mono" id="dQRtxt"></p></div></div>
+  </div>
+  <div class="d-foot">
+    <button class="btn btn-danger" id="dBaja"><i class="fas fa-ban"></i>Dar de baja</button>
+    <button class="btn btn-primary" id="dEdit"><i class="fas fa-pen"></i>Editar</button>
+  </div>
+</aside>
+
+<!-- ============ FORMULARIO: REGISTRAR / EDITAR ============ -->
+<div class="overlay" id="mAdd">
+  <div class="modal">
+    <div class="modal-head">
+      <h3><i class="fas fa-laptop" style="color:var(--primary);margin-right:8px"></i><span id="mTitle">Registrar activo</span></h3>
+      <button class="close" type="button" onclick="cerrarRegistro()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <form id="addForm" novalidate>
+      <div class="modal-body">
+        <div class="form-grid">
+          <div class="f"><label>Tipo de equipo <span class="req">*</span></label><select id="aTipo"></select></div>
+          <div class="f"><label>Número de serie <span class="req">*</span></label><input id="aSerie" placeholder="Ej. 5CD1234XYZ"></div>
+          <div class="f"><label>Marca</label><input id="aMarca" placeholder="Ej. HP"></div>
+          <div class="f"><label>Modelo</label><input id="aModelo" placeholder="Ej. ProDesk 400 G7"></div>
+          <div class="f"><label>Módulo <span class="req">*</span></label><select id="aModulo"></select></div>
+          <div class="f"><label>Responsable</label><select id="aResp"></select></div>
+          <div class="f"><label>Estado</label>
+            <select id="aEstado"><option>Operativo</option><option>Mantenimiento</option><option>Baja</option></select>
+          </div>
+          <div class="f"><label>Fecha de alta</label><input type="date" id="aFecha"></div>
+          <div class="f full"><label>Observaciones</label><textarea id="aObs" placeholder="Opcional"></textarea></div>
+        </div>
+        <div class="form-error" id="addError"></div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-light" onclick="cerrarRegistro()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="btnGuardar"><i class="fas fa-check"></i>Guardar activo</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i class="fas fa-circle-check"></i><span id="toastMsg"></span></div>
+
+<script>
+/* ============ UTILIDADES ============ */
+const $ = s => document.querySelector(s);
+const pill = e => e === 'Operativo' ? 'p-ok' : e === 'Mantenimiento' ? 'p-warn' : 'p-bad';
+const fmt = d => d ? d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+const hoy = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); };
+
+function toast(msg, esError = false) {
+  $('#toastMsg').textContent = msg;
+  $('#toast i').className = esError ? 'fas fa-circle-exclamation' : 'fas fa-circle-check';
+  $('#toast').classList.toggle('err', esError);
+  $('#toast').classList.add('show');
+  setTimeout(() => $('#toast').classList.remove('show'), 3200);
+}
+
+function mensajeError(e) {
+  const texto = `${e.message || ''} ${e.details || ''}`;
+  if (e.code === '23505') return texto.includes('num_serie')
+    ? 'Ya existe un activo con ese número de serie.'
+    : 'Registro duplicado: ' + (e.details || e.message);
+  if (e.code === '42501') return 'Sin permiso para guardar en la base de datos: ' + e.message;
+  if (e.code === '23502') return 'Falta un dato obligatorio: ' + e.message;
+  return 'No se pudo guardar: ' + (e.message || 'error desconocido');
+}
+
+/* ============ ESTADO ============ */
+let perfil = null, activos = [], cat = { tipos: [], modulos: [], resps: [] };
+let actual = null, editId = null;
+let state = { q: '', tipo: '', mod: '', res: '', est: '', sort: 'folio', dir: -1, page: 1, per: 15 };
+const puedeEditar = () => perfil && perfil.rol !== 'auditor';
+
+function mapear(r) {
+  return {
+    dbId: r.id, folio: r.folio, tipo: r.tipo, icono: r.icono || 'fa-box',
+    marca: r.marca || '', modelo: r.modelo || '', serie: r.num_serie,
+    modulo: r.modulo || 'Sin módulo', resp: r.responsable || 'Sin responsable',
+    resguardo: r.con_resguardo ? 'Con resguardo' : 'Sin resguardo',
+    estado: r.estado, alta: r.fecha_alta ? new Date(r.fecha_alta + 'T00:00:00') : null
+  };
+}
+
+/* ============ CARGA DE DATOS ============ */
+async function cargarCatalogos() {
+  const [t, m, r] = await Promise.all([
+    db.from('tipos_equipo').select('id, nombre').order('nombre'),
+    db.from('modulos').select('id, nombre').order('nombre'),
+    db.from('responsables').select('id, nombre').eq('activo', true).order('nombre')
+  ]);
+  const err = t.error || m.error || r.error;
+  if (err) throw err;
+  cat = { tipos: t.data, modulos: m.data, resps: r.data };
+
+  $('#fTipo').innerHTML = '<option value="">Tipo de equipo</option>' + cat.tipos.map(x => `<option>${esc(x.nombre)}</option>`).join('');
+  $('#fMod').innerHTML  = '<option value="">Módulo</option>' + cat.modulos.map(x => `<option>${esc(x.nombre)}</option>`).join('');
+  $('#aTipo').innerHTML   = '<option value="">Selecciona…</option>' + cat.tipos.map(x => `<option value="${x.id}">${esc(x.nombre)}</option>`).join('');
+  $('#aModulo').innerHTML = '<option value="">Selecciona…</option>' + cat.modulos.map(x => `<option value="${x.id}">${esc(x.nombre)}</option>`).join('');
+  $('#aResp').innerHTML   = '<option value="">Sin asignar</option>' + cat.resps.map(x => `<option value="${x.id}">${esc(x.nombre)}</option>`).join('');
+}
+
+async function cargarDatos() {
+  $('#empty').style.display = 'none';
+  $('#tbody').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--muted)"><i class="fas fa-spinner fa-spin"></i> Cargando inventario…</td></tr>';
+  try {
+    const filas = await fetchAll('v_inventario', '*', 'id');
+    activos = filas.map(mapear);
+    render();
+  } catch (err) {
+    console.error('Error al cargar inventario:', err);
+    $('#tbody').innerHTML = `<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--danger)">No se pudo cargar el inventario: ${esc(err.message)}</td></tr>`;
+  }
+}
+
+/* ============ TABLA ============ */
+function filtrados() {
+  const q = state.q.toLowerCase();
+  return activos.filter(a =>
+    (!state.tipo || a.tipo === state.tipo) &&
+    (!state.mod  || a.modulo === state.mod) &&
+    (!state.res  || a.resguardo === state.res) &&
+    (!state.est  || a.estado === state.est) &&
+    (!q || [a.folio, a.serie, a.marca, a.modelo, a.resp, a.tipo, a.modulo].join(' ').toLowerCase().includes(q))
+  ).sort((x, y) => String(x[state.sort]).localeCompare(String(y[state.sort]), 'es') * state.dir);
+}
+
+function render() {
+  const list = filtrados();
+  const pages = Math.max(1, Math.ceil(list.length / state.per));
+  if (state.page > pages) state.page = pages;
+  const slice = list.slice((state.page - 1) * state.per, state.page * state.per);
+
+  $('#tbody').innerHTML = slice.map(a => `
+    <tr data-id="${a.dbId}">
+      <td class="mono">${esc(a.folio)}</td>
+      <td><div class="asset"><div class="asset-ico"><i class="fas ${esc(a.icono)}"></i></div><div><strong>${esc(a.tipo)}</strong><small>${esc(a.marca)} ${esc(a.modelo)}</small></div></div></td>
+      <td class="mono">${esc(a.serie)}</td>
+      <td>${esc(a.modulo)}</td>
+      <td>${esc(a.resp)}</td>
+      <td><span class="res ${a.resguardo === 'Con resguardo' ? 'si' : 'no'}"><i class="fas ${a.resguardo === 'Con resguardo' ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i> ${a.resguardo === 'Con resguardo' ? 'Firmado' : 'Pendiente'}</span></td>
+      <td><span class="pill ${pill(a.estado)}">${esc(a.estado)}</span></td>
+      <td><button class="ra" title="Ver detalle"><i class="fas fa-chevron-right"></i></button></td>
+    </tr>`).join('');
+
+  const vacio = $('#empty');
+  if (!activos.length) {
+    vacio.innerHTML = '<i class="fas fa-box-open"></i>Aún no hay activos registrados.<br>Usa el botón <b>Registrar activo</b> para agregar el primero.';
+    vacio.style.display = 'block';
+  } else if (!list.length) {
+    vacio.innerHTML = '<i class="fas fa-magnifying-glass"></i>No hay activos que coincidan con la búsqueda.';
+    vacio.style.display = 'block';
+  } else vacio.style.display = 'none';
+
+  const desde = list.length ? (state.page - 1) * state.per + 1 : 0;
+  $('#info').textContent = `${desde}–${Math.min(state.page * state.per, list.length)} de ${list.length} activos`;
+
+  let html = `<button ${state.page === 1 ? 'disabled' : ''} data-p="${state.page - 1}"><i class="fas fa-chevron-left"></i></button>`;
+  for (let p = 1; p <= pages; p++) {
+    if (p === 1 || p === pages || Math.abs(p - state.page) <= 1) html += `<button class="${p === state.page ? 'on' : ''}" data-p="${p}">${p}</button>`;
+    else if (Math.abs(p - state.page) === 2) html += `<button disabled>…</button>`;
+  }
+  html += `<button ${state.page === pages ? 'disabled' : ''} data-p="${state.page + 1}"><i class="fas fa-chevron-right"></i></button>`;
+  $('#pages').innerHTML = html;
+
+  $('#sTotal').textContent = activos.length;
+  $('#sOk').textContent   = activos.filter(a => a.estado === 'Operativo').length;
+  $('#sWarn').textContent = activos.filter(a => a.estado === 'Mantenimiento').length;
+  $('#sBad').textContent  = activos.filter(a => a.estado === 'Baja').length;
+  $('#sbCount').textContent = activos.length;
+  document.querySelectorAll('.sum').forEach(s => s.classList.toggle('on', s.dataset.st === state.est));
+
+  const chips = [['tipo', state.tipo], ['mod', state.mod], ['res', state.res], ['est', state.est]].filter(c => c[1]);
+  $('#chips').innerHTML = chips.map(([k, v]) => `<span class="chip">${esc(v)}<button data-k="${k}"><i class="fas fa-xmark"></i></button></span>`).join('');
+  document.querySelectorAll('th[data-k]').forEach(th => th.classList.toggle('sorted', th.dataset.k === state.sort));
+}
+
+/* ============ EVENTOS DE TABLA ============ */
+$('#q').addEventListener('input', e => { state.q = e.target.value; state.page = 1; render(); });
+$('#fTipo').addEventListener('change', e => { state.tipo = e.target.value; state.page = 1; render(); });
+$('#fMod').addEventListener('change', e => { state.mod = e.target.value; state.page = 1; render(); });
+$('#fRes').addEventListener('change', e => { state.res = e.target.value; state.page = 1; render(); });
+$('#perPage').addEventListener('change', e => { state.per = +e.target.value; state.page = 1; render(); });
+$('#pages').addEventListener('click', e => { const b = e.target.closest('button[data-p]'); if (b && !b.disabled) { state.page = +b.dataset.p; render(); } });
+document.querySelectorAll('.sum').forEach(s => s.addEventListener('click', () => { state.est = s.dataset.st; state.page = 1; render(); }));
+document.querySelectorAll('th[data-k]').forEach(th => th.addEventListener('click', () => {
+  state.dir = state.sort === th.dataset.k ? -state.dir : 1; state.sort = th.dataset.k; render();
+}));
+$('#chips').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const k = b.dataset.k; state[k] = '';
+  const sel = { tipo: '#fTipo', mod: '#fMod', res: '#fRes' }[k];
+  if (sel) $(sel).value = '';
+  render();
+});
+$('#btnClear').addEventListener('click', () => {
+  Object.assign(state, { q: '', tipo: '', mod: '', res: '', est: '', page: 1 });
+  ['#q', '#fTipo', '#fMod', '#fRes'].forEach(s => $(s).value = '');
+  render();
+});
+$('#tbody').addEventListener('click', e => { const tr = e.target.closest('tr[data-id]'); if (tr) openDetail(+tr.dataset.id); });
+$('#menuBtn').addEventListener('click', () => $('#sidebar').classList.toggle('open'));
+
+/* ============ EXPORTAR CSV ============ */
+$('#btnExport').addEventListener('click', () => {
+  const lista = filtrados();
+  if (!lista.length) return toast('No hay activos para exportar', true);
+  const filas = [['Folio', 'Tipo', 'Marca', 'Modelo', 'Serie', 'Módulo', 'Responsable', 'Resguardo', 'Estado', 'Fecha de alta']]
+    .concat(lista.map(a => [a.folio, a.tipo, a.marca, a.modelo, a.serie, a.modulo, a.resp, a.resguardo, a.estado, fmt(a.alta)]));
+  const csv = '\uFEFF' + filas.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  link.download = 'inventario_ine_veracruz.csv';
+  link.click();
+  toast('Inventario exportado');
+});
+
+/* ============ DETALLE ============ */
+function openDetail(dbId) {
+  const a = activos.find(x => x.dbId === dbId); if (!a) return;
+  actual = a;
+  $('#dIco').innerHTML = `<i class="fas ${esc(a.icono)}"></i>`;
+  $('#dTitle').textContent = `${a.tipo} · ${a.folio}`;
+  $('#dSub').innerHTML = `${esc(a.marca)} ${esc(a.modelo)} <span class="pill ${pill(a.estado)}" style="padding:2px 8px;margin-left:6px">${esc(a.estado)}</span>`;
+  $('#tab-info').innerHTML = `<div class="kv">
+    <div><small>No. de serie</small><b class="mono">${esc(a.serie)}</b></div>
+    <div><small>Fecha de alta</small><b>${fmt(a.alta)}</b></div>
+    <div><small>Marca</small><b>${esc(a.marca) || '—'}</b></div>
+    <div><small>Modelo</small><b>${esc(a.modelo) || '—'}</b></div>
+    <div class="full"><small>Módulo asignado</small><b>${esc(a.modulo)}</b></div>
+    <div class="full"><small>Responsable</small><b>${esc(a.resp)}</b></div>
+    <div class="full"><small>Resguardo</small><b style="color:${a.resguardo === 'Con resguardo' ? 'var(--ok)' : 'var(--danger)'}">${a.resguardo === 'Con resguardo' ? 'Firmado' : 'Pendiente de firma'}</b></div>
+  </div>`;
+  $('#dQR').innerHTML = '';
+  new QRCode($('#dQR'), { text: `${a.folio}|${a.serie}|${a.tipo}|${a.modulo}`, width: 180, height: 180, colorDark: '#14111A' });
+  $('#dQRtxt').textContent = a.folio;
+  $('#dEdit').style.display = puedeEditar() ? '' : 'none';
+  $('#dBaja').style.display = puedeEditar() && a.estado !== 'Baja' ? '' : 'none';
+  switchTab('info');
+  cargarHistorial(a.dbId);
+  $('#drawer').classList.add('show'); $('#drawerBg').classList.add('show');
+}
+function closeDetail() { $('#drawer').classList.remove('show'); $('#drawerBg').classList.remove('show'); }
+function switchTab(t) {
+  document.querySelectorAll('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+  ['info', 'hist', 'qr'].forEach(x => $('#tab-' + x).style.display = x === t ? 'block' : 'none');
+}
+document.querySelectorAll('.tabs button').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+$('#dClose').addEventListener('click', closeDetail);
+$('#drawerBg').addEventListener('click', closeDetail);
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeDetail(); cerrarRegistro(); } });
+
+async function cargarHistorial(dbId) {
+  const box = $('#tab-hist');
+  box.innerHTML = '<p style="color:var(--muted);font-size:13px"><i class="fas fa-spinner fa-spin"></i> Cargando historial…</p>';
+  const { data, error } = await db.from('historial').select('accion, fecha').eq('activo_id', dbId).order('fecha', { ascending: false });
+  if (error) { console.error(error); box.innerHTML = '<p style="color:var(--danger);font-size:13px">No se pudo cargar el historial.</p>'; return; }
+  if (!data.length) { box.innerHTML = '<p style="color:var(--muted);font-size:13px">Sin movimientos registrados.</p>'; return; }
+  box.innerHTML = `<div class="timeline">${data.map(x => `
+    <div class="tl"><b>${esc(x.accion)}</b><small>${new Date(x.fecha).toLocaleString('es-MX')}</small></div>`).join('')}</div>`;
+}
+
+/* ============ REGISTRAR / EDITAR ============ */
+function abrirRegistro() {
+  editId = null;
+  $('#mTitle').textContent = 'Registrar activo';
+  $('#addForm').reset();
+  $('#aFecha').value = hoy();
+  $('#addError').classList.remove('show');
+  $('#mAdd').classList.add('show');
+  setTimeout(() => $('#aTipo').focus(), 100);
+}
+
+async function abrirEdicion() {
+  if (!actual) return;
+  const { data, error } = await db.from('activos').select('*').eq('id', actual.dbId).single();
+  if (error) { console.error(error); return toast('No se pudo cargar el activo', true); }
+  editId = data.id;
+  $('#mTitle').textContent = 'Editar activo ' + data.folio;
+  $('#addError').classList.remove('show');
+  $('#aTipo').value   = data.tipo_id ?? '';
+  $('#aSerie').value  = data.num_serie ?? '';
+  $('#aMarca').value  = data.marca ?? '';
+  $('#aModelo').value = data.modelo ?? '';
+  $('#aModulo').value = data.modulo_id ?? '';
+  $('#aResp').value   = data.responsable_id ?? '';
+  $('#aEstado').value = data.estado;
+  $('#aFecha').value  = data.fecha_alta ?? '';
+  $('#aObs').value    = data.observaciones ?? '';
+  closeDetail();
+  $('#mAdd').classList.add('show');
+}
+
+function cerrarRegistro() { $('#mAdd').classList.remove('show'); }
+
+$('#btnAdd').addEventListener('click', abrirRegistro);
+$('#dEdit').addEventListener('click', abrirEdicion);
+$('#mAdd').addEventListener('click', e => { if (e.target.id === 'mAdd') cerrarRegistro(); });
+
+$('#addForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const errBox = $('#addError');
+  errBox.classList.remove('show');
+
+  const tipo_id = $('#aTipo').value;
+  const modulo_id = $('#aModulo').value;
+  const num_serie = $('#aSerie').value.trim().toUpperCase();
+  if (!tipo_id || !modulo_id || !num_serie) {
+    errBox.textContent = 'Completa los campos obligatorios: tipo de equipo, número de serie y módulo.';
+    errBox.classList.add('show');
+    return;
+  }
+
+  const datos = {
+    tipo_id: +tipo_id,
+    modulo_id: +modulo_id,
+    num_serie,
+    marca: $('#aMarca').value.trim() || null,
+    modelo: $('#aModelo').value.trim() || null,
+    responsable_id: $('#aResp').value ? +$('#aResp').value : null,
+    estado: $('#aEstado').value,
+    fecha_alta: $('#aFecha').value || null,
+    observaciones: $('#aObs').value.trim() || null
+  };
+
+  const btn = $('#btnGuardar');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>Guardando…';
+
+  const esEdicion = !!editId;
+  const res = esEdicion
+    ? await db.from('activos').update(datos).eq('id', editId).select('id, folio').single()
+    : await db.from('activos').insert(datos).select('id, folio').single();
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-check"></i>Guardar activo';
+
+  if (res.error) {
+    console.error('Error al guardar:', res.error);
+    errBox.textContent = mensajeError(res.error);
+    errBox.classList.add('show');
+    return;
+  }
+
+  cerrarRegistro();
+  editId = null;
+  await cargarDatos();
+  toast(esEdicion ? `Activo ${res.data.folio} actualizado` : `Activo ${res.data.folio} registrado correctamente`);
+});
+
+/* ============ DAR DE BAJA ============ */
+$('#dBaja').addEventListener('click', async () => {
+  if (!actual || !confirm(`¿Dar de baja el activo ${actual.folio}?`)) return;
+  const { error } = await db.from('activos').update({ estado: 'Baja' }).eq('id', actual.dbId);
+  if (error) { console.error(error); return toast(mensajeError(error), true); }
+  closeDetail();
+  await cargarDatos();
+  toast(`Activo ${actual.folio} dado de baja`);
+});
+
+/* ============ INICIO ============ */
+(async function init() {
+  perfil = await iniciarPagina();
+  if (!perfil) return;
+  if (!puedeEditar()) $('#btnAdd').style.display = 'none';
+  try { await cargarCatalogos(); }
+  catch (err) { console.error('Error en catálogos:', err); toast('No se pudieron cargar los catálogos: ' + err.message, true); }
+  await cargarDatos();
+  if (new URLSearchParams(location.search).has('nuevo') && puedeEditar()) abrirRegistro();
+})();
+</script>
+</body>
+</html>

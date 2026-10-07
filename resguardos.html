@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resguardos · INE Veracruz</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<style>
+:root{--primary:#B0124E;--primary-dark:#7A0C36;--primary-light:#E8417F;--ink:#14111A;--muted:#6B6475;--line:#ECE8F0;--bg:#F7F5FA;--ok:#16A34A;--warn:#D97706;--danger:#DC2626;--sidebar:260px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+a{text-decoration:none;color:inherit}button{font:inherit;cursor:pointer}
+.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);z-index:40;background:radial-gradient(140% 80% at 0% 0%,#C2185B 0%,#7A0C36 50%,#2A0614 100%);color:#fff;display:flex;flex-direction:column;padding:22px 16px;transition:transform .3s}
+.sb-brand{display:flex;align-items:center;gap:12px;padding:6px 8px 22px;border-bottom:1px solid rgba(255,255,255,.12)}
+.sb-mark{width:56px;height:56px;display:grid;place-items:center;flex-shrink:0}.sb-mark img{width:100%;height:100%;object-fit:contain}
+.sb-brand strong{display:block;font-size:14px}.sb-brand span{font-size:11.5px;opacity:.7}
+.sb-section{font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;opacity:.5;margin:22px 12px 8px}
+.sb-link{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-size:13.5px;font-weight:500;color:rgba(255,255,255,.78);transition:all .2s;margin-bottom:2px}
+.sb-link i{width:18px;text-align:center;font-size:14px}
+.sb-link:hover{background:rgba(255,255,255,.09);color:#fff}
+.sb-link.active{background:rgba(255,255,255,.16);color:#fff;font-weight:600;box-shadow:inset 3px 0 0 #fff}
+.sb-link .count{margin-left:auto;font-size:11px;background:rgba(255,255,255,.18);padding:2px 8px;border-radius:999px}
+.sb-user{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#FFD1E3,#fff);color:var(--primary);display:grid;place-items:center;font-weight:800;font-size:13px;flex-shrink:0}
+.sb-user strong{display:block;font-size:13px}.sb-user span{font-size:11px;opacity:.7}.sb-user a{margin-left:auto;opacity:.7}
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:16px;padding:16px 32px;background:rgba(247,245,250,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.menu-btn{display:none;border:1px solid var(--line);background:#fff;width:40px;height:40px;border-radius:10px}
+.crumbs{font-size:12.5px;color:var(--muted)}.crumbs b{color:var(--primary)}
+.page-title h1{font-size:20px;font-weight:800;letter-spacing:-.4px}
+.top-actions{margin-left:auto;display:flex;gap:10px}
+.content{padding:28px 32px 40px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:11px;padding:11px 18px;font-size:13.5px;font-weight:700;transition:all .2s}
+.btn-primary{background:linear-gradient(135deg,var(--primary-light),var(--primary));color:#fff;box-shadow:0 8px 18px -8px rgba(176,18,78,.6)}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed}
+.btn-light{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn-light:hover{border-color:var(--primary);color:var(--primary)}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.sum{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;align-items:center;gap:14px}
+.sum i{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:17px}
+.sum b{font-size:24px;font-weight:800;display:block}.sum span{font-size:12.5px;color:var(--muted)}
+.c1{background:#FDECF3;color:var(--primary)}.c2{background:#ECFDF3;color:var(--ok)}.c3{background:#F1F0F4;color:var(--muted)}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px}
+.panel-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+.panel-head h3{font-size:15px;font-weight:700}.panel-head p{font-size:12px;color:var(--muted)}
+.search{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:11px;padding:0 14px;width:320px}
+.search:focus-within{border-color:var(--primary)}
+.search i{color:#A39CAD;font-size:13px}
+.search input{border:0;outline:0;padding:10px 0;width:100%;font:inherit;font-size:13.5px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700;padding:12px 14px;background:var(--bg);white-space:nowrap}
+th:first-child{border-radius:10px 0 0 10px}th:last-child{border-radius:0 10px 10px 0}
+td{padding:13px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+tr:hover td{background:#FCFBFD}
+td small{color:var(--muted);font-size:12px}
+.mono{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;color:#4B4556}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;font-size:12px;font-weight:600}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.p-ok{background:#ECFDF3;color:var(--ok)}.p-off{background:#F1F0F4;color:var(--muted)}.p-warn{background:#FFF7ED;color:var(--warn)}
+.ra{width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--muted);font-size:12.5px;margin-left:4px}
+.ra:hover{background:var(--ink);color:#fff;border-color:transparent}
+.ra.del:hover{background:var(--danger)}
+.msg{text-align:center;padding:40px;color:var(--muted);font-size:13px}
+.overlay{position:fixed;inset:0;background:rgba(20,17,26,.45);backdrop-filter:blur(4px);z-index:60;display:none;align-items:center;justify-content:center;padding:20px}
+.overlay.show{display:flex}
+.modal{background:#fff;border-radius:20px;width:100%;max-width:680px;max-height:94vh;overflow:auto}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--line)}
+.modal-head h3{font-size:17px;font-weight:800}
+.close{border:0;background:var(--bg);width:34px;height:34px;border-radius:10px;color:var(--muted)}
+.steps{display:flex;gap:8px;padding:16px 24px 0}
+.step{flex:1;display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--muted)}
+.step span{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--bg);font-size:12px}
+.step.on{color:var(--primary)}.step.on span{background:var(--primary);color:#fff}
+.step.done span{background:var(--ok);color:#fff}
+.modal-body{padding:20px 24px}
+.f{margin-bottom:14px}
+.f label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px}
+.f select{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;font:inherit;font-size:13.5px;outline:0;background:#fff}
+.f select:focus{border-color:var(--primary)}
+.preview{background:var(--bg);border-radius:14px;padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.preview small{display:block;font-size:10.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.preview b{font-size:13px}
+.preview .full{grid-column:1/-1}
+.hint{font-size:12.5px;color:var(--muted);margin-top:8px}
+.sign-box{border:2px dashed #D9D2E2;border-radius:14px;background:#FCFBFD;position:relative}
+.sign-box canvas{display:block;width:100%;height:200px;touch-action:none;cursor:crosshair}
+.sign-hint{position:absolute;inset:0;display:grid;place-items:center;color:#B5AFBE;font-size:13px;pointer-events:none}
+.sign-line{position:absolute;left:30px;right:30px;bottom:40px;border-top:1px solid #D9D2E2;pointer-events:none}
+.legal{font-size:12px;color:var(--muted);line-height:1.6;background:#F4FBF6;border:1px solid #D7F0DE;border-radius:12px;padding:12px 14px;margin-top:14px}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;margin-top:12px}
+.check input{margin-top:3px;accent-color:var(--primary)}
+.form-error{display:none;margin-top:14px;padding:10px 12px;border-radius:10px;background:#FEF2F2;color:var(--danger);font-size:13px}
+.form-error.show{display:block}
+.modal-foot{display:flex;justify-content:space-between;gap:10px;padding:16px 24px;border-top:1px solid var(--line)}
+.done-box{text-align:center;padding:10px 0}
+.done-box .ok{width:64px;height:64px;border-radius:50%;background:#ECFDF3;color:var(--ok);display:grid;place-items:center;font-size:28px;margin:0 auto 14px}
+.done-box h4{font-size:18px;margin-bottom:6px}
+.done-box p{font-size:13px;color:var(--muted)}
+.verify{display:inline-block;margin-top:12px;padding:8px 14px;border-radius:10px;background:var(--bg);font-family:ui-monospace,Consolas,monospace;font-size:13px;font-weight:700;color:var(--primary)}
+.toast{position:fixed;bottom:24px;right:24px;z-index:80;display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:12px;background:var(--ink);color:#fff;font-size:13.5px;transform:translateY(20px);opacity:0;pointer-events:none;transition:all .35s;max-width:420px}
+.toast.show{transform:none;opacity:1}.toast i{color:#4ADE80}.toast.err i{color:#F87171}
+#qrTmp{position:absolute;left:-9999px}
+@media (max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.main{margin-left:0}.menu-btn{display:grid;place-items:center}.content,.topbar{padding-left:18px;padding-right:18px}.summary,.preview{grid-template-columns:1fr}.search{width:100%}}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-mark"><img src="img/logo-ine.png" alt="Logo INE"></div>
+    <div><strong>INE Veracruz</strong><span>Inventario Tecnológico</span></div>
+  </div>
+  <div class="sb-section">General</div>
+  <a href="dashboard.html" class="sb-link"><i class="fas fa-grip"></i>Dashboard</a>
+  <a href="inventario.html" class="sb-link"><i class="fas fa-laptop"></i>Inventario</a>
+  <a href="#" class="sb-link"><i class="fas fa-building"></i>Módulos</a>
+  <a href="responsables.html" class="sb-link"><i class="fas fa-users"></i>Responsables</a>
+  <div class="sb-section">Gestión</div>
+  <a href="resguardos.html" class="sb-link active"><i class="fas fa-file-signature"></i>Resguardos<span class="count" id="sbCount">0</span></a>
+  <a href="#" class="sb-link"><i class="fas fa-qrcode"></i>Códigos QR</a>
+  <a href="#" class="sb-link"><i class="fas fa-clock-rotate-left"></i>Historial</a>
+  <a href="#" class="sb-link"><i class="fas fa-chart-pie"></i>Reportes</a>
+  <div class="sb-section">Sistema</div>
+  <a href="#" class="sb-link"><i class="fas fa-user-shield"></i>Usuarios y roles</a>
+  <a href="#" class="sb-link"><i class="fas fa-gear"></i>Configuración</a>
+  <div class="sb-user">
+    <div class="avatar">—</div>
+    <div><strong>Cargando…</strong><span>Rol: —</span></div>
+    <a href="#" onclick="cerrarSesion()" title="Cerrar sesión"><i class="fas fa-arrow-right-from-bracket"></i></a>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><div class="crumbs">Gestión / <b>Resguardos</b></div><h1>Resguardos digitales</h1></div>
+    <div class="top-actions"><button class="btn btn-primary" id="btnNew"><i class="fas fa-file-signature"></i>Nuevo resguardo</button></div>
+  </header>
+
+  <section class="content">
+    <div class="summary">
+      <div class="sum"><i class="fas fa-file-lines c1"></i><div><b id="sTotal">0</b><span>Resguardos emitidos</span></div></div>
+      <div class="sum"><i class="fas fa-file-circle-check c2"></i><div><b id="sOk">0</b><span>Vigentes (firmados)</span></div></div>
+      <div class="sum"><i class="fas fa-file-circle-xmark c3"></i><div><b id="sCan">0</b><span>Cancelados</span></div></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <div><h3>Historial de resguardos</h3><p>Cada resguardo tiene folio y código de verificación único</p></div>
+        <div class="search"><i class="fas fa-magnifying-glass"></i><input id="q" placeholder="Buscar folio, activo o responsable…"></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Folio</th><th>Activo</th><th>Responsable</th><th>Módulo</th><th>Fecha</th><th>Estado</th><th></th></tr></thead>
+          <tbody id="tbody"><tr><td colspan="7" class="msg"><i class="fas fa-spinner fa-spin"></i> Cargando…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ============ ASISTENTE ============ -->
+<div class="overlay" id="mNew">
+  <div class="modal">
+    <div class="modal-head">
+      <h3><i class="fas fa-file-signature" style="color:var(--primary);margin-right:8px"></i>Nuevo resguardo</h3>
+      <button class="close" onclick="cerrarAsistente()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <div class="steps">
+      <div class="step on" id="st1"><span>1</span>Datos</div>
+      <div class="step" id="st2"><span>2</span>Firma</div>
+      <div class="step" id="st3"><span>3</span>Emisión</div>
+    </div>
+
+    <div class="modal-body" id="p1">
+      <div class="f"><label>Activo a resguardar</label><select id="sAsset"></select></div>
+      <div class="f"><label>Responsable</label><select id="sResp"></select></div>
+      <div class="preview" id="prev"></div>
+      <p class="hint" id="hintResp"></p>
+    </div>
+
+    <div class="modal-body" id="p2" style="display:none">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:10px">El responsable debe firmar dentro del recuadro.</p>
+      <div class="sign-box">
+        <canvas id="pad"></canvas>
+        <div class="sign-line"></div>
+        <div class="sign-hint" id="hint"><span><i class="fas fa-pen-nib"></i> Firme aquí</span></div>
+      </div>
+      <div style="text-align:right;margin-top:8px"><button class="btn btn-light" id="btnClearSign" style="padding:7px 12px;font-size:12.5px"><i class="fas fa-eraser"></i>Limpiar</button></div>
+      <div class="legal"><b>Aviso de privacidad simplificado.</b> Los datos personales recabados (nombre, puesto, correo y número de empleado) se utilizarán exclusivamente para el control y resguardo de los bienes informáticos asignados, conforme a la Ley General de Protección de Datos Personales en Posesión de Sujetos Obligados (LGPDPPSO).</div>
+      <label class="check"><input type="checkbox" id="chkAcept"> Acepto la responsabilidad de custodia y uso adecuado del bien descrito, así como el aviso de privacidad.</label>
+    </div>
+
+    <div class="modal-body" id="p3" style="display:none">
+      <div class="done-box">
+        <div class="ok"><i class="fas fa-check"></i></div>
+        <h4>Resguardo emitido correctamente</h4>
+        <p>Quedó guardado en el sistema y puede descargarse en PDF.</p>
+        <div class="verify" id="vCode">—</div>
+      </div>
+    </div>
+
+    <div class="modal-body" style="padding-top:0"><div class="form-error" id="wError"></div></div>
+
+    <div class="modal-foot">
+      <button class="btn btn-light" id="btnBack">Atrás</button>
+      <button class="btn btn-primary" id="btnNext">Continuar <i class="fas fa-arrow-right"></i></button>
+    </div>
+  </div>
+</div>
+
+<div id="qrTmp"></div>
+<div class="toast" id="toast"><i class="fas fa-circle-check"></i><span id="toastMsg"></span></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const fmtFecha = d => new Date(d).toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' });
+let perfil = null, resguardos = [], activos = [], resps = [], step = 1, ultimoId = null, emitiendo = false;
+const puedeEditar = () => perfil && perfil.rol !== 'auditor';
+
+function toast(msg, err = false) {
+  $('#toastMsg').textContent = msg;
+  $('#toast i').className = err ? 'fas fa-circle-exclamation' : 'fas fa-circle-check';
+  $('#toast').classList.toggle('err', err);
+  $('#toast').classList.add('show');
+  setTimeout(() => $('#toast').classList.remove('show'), 3200);
+}
+function errorAsistente(msg) { const b = $('#wError'); b.textContent = msg; b.classList.toggle('show', !!msg); }
+
+// Código de verificación aleatorio: XXXX-XXXX
+function genCodigo() {
+  const b = crypto.getRandomValues(new Uint8Array(4));
+  const h = [...b].map(x => x.toString(16).padStart(2, '0')).join('').toUpperCase();
+  return h.slice(0, 4) + '-' + h.slice(4);
+}
+
+/* ============ CARGA ============ */
+const SEL_RESGUARDO = 'id, folio, codigo_verificacion, estado, fecha, activo_id, responsable_id, ' +
+  'activos(folio, num_serie, marca, modelo, tipos_equipo(nombre), modulos(nombre)), ' +
+  'responsables(nombre, puesto, correo, num_empleado)';
+
+async function cargar() {
+  const [r, a, p] = await Promise.all([
+    db.from('resguardos').select(SEL_RESGUARDO).order('id', { ascending: false }),
+    db.from('activos').select('id, folio, num_serie, marca, modelo, estado, responsable_id, tipos_equipo(nombre), modulos(nombre)').neq('estado', 'Baja').order('folio'),
+    db.from('responsables').select('id, nombre, puesto, correo, num_empleado').eq('activo', true).order('nombre')
+  ]);
+  const err = r.error || a.error || p.error;
+  if (err) {
+    console.error(err);
+    $('#tbody').innerHTML = `<tr><td colspan="7" class="msg" style="color:var(--danger)">No se pudieron cargar los datos: ${esc(err.message)}</td></tr>`;
+    return;
+  }
+  resguardos = r.data; activos = a.data; resps = p.data;
+  render();
+}
+
+function render() {
+  const q = $('#q').value.toLowerCase();
+  const list = resguardos.filter(r => !q || [r.folio, r.activos?.folio, r.activos?.tipos_equipo?.nombre, r.responsables?.nombre].join(' ').toLowerCase().includes(q));
+  $('#sTotal').textContent = resguardos.length;
+  $('#sOk').textContent = resguardos.filter(r => r.estado === 'Firmado').length;
+  $('#sCan').textContent = resguardos.filter(r => r.estado === 'Cancelado').length;
+  $('#sbCount').textContent = resguardos.filter(r => r.estado === 'Firmado').length;
+
+  if (!resguardos.length) { $('#tbody').innerHTML = '<tr><td colspan="7" class="msg">Aún no hay resguardos emitidos. Usa <b>Nuevo resguardo</b>.</td></tr>'; return; }
+  if (!list.length) { $('#tbody').innerHTML = '<tr><td colspan="7" class="msg">No hay coincidencias.</td></tr>'; return; }
+
+  $('#tbody').innerHTML = list.map(r => {
+    const clase = r.estado === 'Firmado' ? 'p-ok' : r.estado === 'Cancelado' ? 'p-off' : 'p-warn';
+    return `<tr>
+      <td class="mono"><b>${esc(r.folio)}</b><br><small>${esc(r.codigo_verificacion)}</small></td>
+      <td>${esc(r.activos?.tipos_equipo?.nombre || '—')}<br><small class="mono">${esc(r.activos?.folio || '')}</small></td>
+      <td>${esc(r.responsables?.nombre || '—')}<br><small>${esc(r.responsables?.puesto || '')}</small></td>
+      <td>${esc(r.activos?.modulos?.nombre || '—')}</td>
+      <td>${fmtFecha(r.fecha)}</td>
+      <td><span class="pill ${clase}">${esc(r.estado)}</span></td>
+      <td>
+        <button class="ra" title="Descargar PDF" onclick="pdf(${r.id})"><i class="fas fa-file-pdf"></i></button>
+        ${r.estado === 'Firmado' && puedeEditar() ? `<button class="ra del" title="Cancelar resguardo" onclick="cancelar(${r.id})"><i class="fas fa-ban"></i></button>` : ''}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function cancelar(id) {
+  const r = resguardos.find(x => x.id === id);
+  if (!confirm(`¿Cancelar el resguardo ${r.folio}? El activo quedará sin resguardo vigente.`)) return;
+  const { error } = await db.from('resguardos').update({ estado: 'Cancelado' }).eq('id', id);
+  if (error) { console.error(error); return toast('No se pudo cancelar: ' + error.message, true); }
+  await cargar();
+  toast(`Resguardo ${r.folio} cancelado`);
+}
+
+/* ============ ASISTENTE ============ */
+function preview() {
+  const a = activos.find(x => x.id === +$('#sAsset').value);
+  const p = resps.find(x => x.id === +$('#sResp').value);
+  if (!a) { $('#prev').innerHTML = ''; return; }
+  $('#prev').innerHTML = `
+    <div><small>No. de serie</small><b class="mono">${esc(a.num_serie)}</b></div>
+    <div><small>Tipo</small><b>${esc(a.tipos_equipo?.nombre || '—')}</b></div>
+    <div><small>Marca / modelo</small><b>${esc(a.marca || '—')} ${esc(a.modelo || '')}</b></div>
+    <div><small>Módulo</small><b>${esc(a.modulos?.nombre || '—')}</b></div>
+    <div class="full"><small>Responsable</small><b>${p ? esc(p.nombre) + ' · ' + esc(p.puesto || 'Sin puesto') : '—'}</b></div>`;
+  const vigente = resguardos.find(r => r.activo_id === a.id && r.estado === 'Firmado');
+  $('#hintResp').innerHTML = vigente
+    ? `<i class="fas fa-circle-info"></i> Este activo ya tiene el resguardo vigente <b>${esc(vigente.folio)}</b>. Al emitir uno nuevo, el anterior quedará cancelado.`
+    : '';
+}
+
+function abrirAsistente() {
+  if (!activos.length) return toast('No hay activos disponibles. Registra uno en Inventario.', true);
+  if (!resps.length) return toast('No hay responsables activos. Registra uno en Responsables.', true);
+  $('#sAsset').innerHTML = activos.map(a => `<option value="${a.id}">${esc(a.folio)} — ${esc(a.tipos_equipo?.nombre || '')} (${esc(a.num_serie)})</option>`).join('');
+  $('#sResp').innerHTML = resps.map(p => `<option value="${p.id}">${esc(p.nombre)}</option>`).join('');
+  sugerirResponsable();
+  $('#chkAcept').checked = false;
+  clearPad(); errorAsistente(''); goStep(1);
+  $('#mNew').classList.add('show');
+}
+function sugerirResponsable() {
+  const a = activos.find(x => x.id === +$('#sAsset').value);
+  if (a?.responsable_id && resps.some(p => p.id === a.responsable_id)) $('#sResp').value = a.responsable_id;
+  preview();
+}
+function cerrarAsistente() { $('#mNew').classList.remove('show'); }
+
+function goStep(s) {
+  step = s;
+  [1, 2, 3].forEach(i => {
+    $('#p' + i).style.display = i === s ? 'block' : 'none';
+    $('#st' + i).className = 'step' + (i === s ? ' on' : i < s ? ' done' : '');
+  });
+  $('#btnBack').style.visibility = s === 2 ? 'visible' : 'hidden';
+  $('#btnNext').innerHTML = s === 1 ? 'Continuar <i class="fas fa-arrow-right"></i>'
+    : s === 2 ? '<i class="fas fa-check"></i> Emitir resguardo'
+    : '<i class="fas fa-file-pdf"></i> Descargar PDF';
+  if (s === 2) setTimeout(resizePad, 50);
+}
+
+$('#sAsset').addEventListener('change', sugerirResponsable);
+$('#sResp').addEventListener('change', preview);
+$('#btnNew').addEventListener('click', abrirAsistente);
+$('#btnBack').addEventListener('click', () => { errorAsistente(''); goStep(1); });
+$('#mNew').addEventListener('click', e => { if (e.target.id === 'mNew') cerrarAsistente(); });
+
+$('#btnNext').addEventListener('click', async () => {
+  errorAsistente('');
+  if (step === 1) return goStep(2);
+  if (step === 3) { cerrarAsistente(); return pdf(ultimoId); }
+
+  // Paso 2: emitir
+  if (!signed) return errorAsistente('Falta la firma del responsable.');
+  if (!$('#chkAcept').checked) return errorAsistente('Debe aceptar la responsabilidad y el aviso de privacidad.');
+  if (emitiendo) return;
+  emitiendo = true;
+  const btn = $('#btnNext'); btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando…';
+
+  try {
+    const activo_id = +$('#sAsset').value, responsable_id = +$('#sResp').value;
+    const activo = activos.find(x => x.id === activo_id);
+
+    // 1. Cancelar el resguardo vigente anterior de este activo
+    const c = await db.from('resguardos').update({ estado: 'Cancelado' }).eq('activo_id', activo_id).eq('estado', 'Firmado');
+    if (c.error) throw c.error;
+
+    // 2. Guardar el nuevo resguardo (reintenta si el código se repite)
+    let ins;
+    for (let i = 0; i < 3; i++) {
+      ins = await db.from('resguardos').insert({
+        activo_id, responsable_id,
+        codigo_verificacion: genCodigo(),
+        firma_url: firmaComprimida(),
+        estado: 'Firmado'
+      }).select('id, folio, codigo_verificacion').single();
+      if (!ins.error || ins.error.code !== '23505') break;
+    }
+    if (ins.error) throw ins.error;
+
+    // 3. Asignar el activo al responsable si cambió
+    if (activo.responsable_id !== responsable_id) {
+      const u = await db.from('activos').update({ responsable_id }).eq('id', activo_id);
+      if (u.error) throw u.error;
+    }
+
+    ultimoId = ins.data.id;
+    $('#vCode').textContent = `${ins.data.folio} · ${ins.data.codigo_verificacion}`;
+    await cargar();
+    goStep(3);
+    toast(`Resguardo ${ins.data.folio} emitido`);
+  } catch (err) {
+    console.error('Error al emitir:', err);
+    errorAsistente('No se pudo emitir el resguardo: ' + err.message);
+    goStep(2);
+  } finally {
+    emitiendo = false; btn.disabled = false;
+    if (step === 2) btn.innerHTML = '<i class="fas fa-check"></i> Emitir resguardo';
+  }
+});
+
+/* ============ PAD DE FIRMA ============ */
+const pad = $('#pad'), pctx = pad.getContext('2d');
+let drawing = false, signed = false;
+function resizePad() {
+  const r = pad.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+  pad.width = r.width * dpr; pad.height = r.height * dpr;
+  pctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  pctx.lineWidth = 2.4; pctx.lineCap = 'round'; pctx.lineJoin = 'round'; pctx.strokeStyle = '#14111A';
+  signed = false; $('#hint').style.display = 'grid';
+}
+function pos(e) { const r = pad.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; }
+pad.addEventListener('pointerdown', e => { drawing = true; const p = pos(e); pctx.beginPath(); pctx.moveTo(p.x, p.y); pad.setPointerCapture(e.pointerId); });
+pad.addEventListener('pointermove', e => { if (!drawing) return; const p = pos(e); pctx.lineTo(p.x, p.y); pctx.stroke(); signed = true; $('#hint').style.display = 'none'; });
+['pointerup', 'pointercancel'].forEach(ev => pad.addEventListener(ev, () => drawing = false));
+function clearPad() { pctx.clearRect(0, 0, pad.width, pad.height); signed = false; $('#hint').style.display = 'grid'; }
+$('#btnClearSign').addEventListener('click', clearPad);
+
+// Reduce la firma a 600 px de ancho para que pese poco
+function firmaComprimida() {
+  const w = 600, h = Math.round(w * pad.height / pad.width);
+  const c = document.createElement('canvas'); c.width = w; c.height = h;
+  c.getContext('2d').drawImage(pad, 0, 0, w, h);
+  return c.toDataURL('image/png');
+}
+
+/* ============ PDF ============ */
+function imgToData(src) {
+  return new Promise(res => {
+    const i = new Image();
+    i.onload = () => { const c = document.createElement('canvas'); c.width = i.width; c.height = i.height; c.getContext('2d').drawImage(i, 0, 0); try { res(c.toDataURL('image/png')); } catch { res(null); } };
+    i.onerror = () => res(null);
+    i.src = src;
+  });
+}
+function qrData(text) {
+  $('#qrTmp').innerHTML = '';
+  new QRCode($('#qrTmp'), { text, width: 220, height: 220, colorDark: '#14111A' });
+  return $('#qrTmp canvas').toDataURL('image/png');
+}
+
+async function pdf(id) {
+  const { data: r, error } = await db.from('resguardos').select(SEL_RESGUARDO + ', firma_url').eq('id', id).single();
+  if (error) { console.error(error); return toast('No se pudo generar el PDF: ' + error.message, true); }
+  const a = r.activos || {}, p = r.responsables || {};
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'mm', format: 'letter' });
+  const W = 215.9, M = 20;
+
+  doc.setFillColor(176, 18, 78); doc.rect(0, 0, W, 30, 'F');
+  const logo = await imgToData('img/logo-logo-ine.png');
+  if (logo) doc.addImage(logo, 'PNG', M, 5, 20, 20);
+  const x0 = logo ? M + 25 : M;
+  doc.setTextColor(255); doc.setFont('helvetica', 'bold'); doc.setFontSize(13);
+  doc.text('INSTITUTO NACIONAL ELECTORAL', x0, 14);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5);
+  doc.text('Junta Local Ejecutiva en el Estado de Veracruz', x0, 20);
+  doc.setFontSize(9);
+  doc.text(`Folio: ${r.folio}`, W - M, 14, { align: 'right' });
+  doc.text(fmtFecha(r.fecha), W - M, 20, { align: 'right' });
+
+  doc.setTextColor(20, 17, 26); doc.setFont('helvetica', 'bold'); doc.setFontSize(14);
+  doc.text('RESGUARDO DE BIENES INFORMÁTICOS', W / 2, 44, { align: 'center' });
+  if (r.estado === 'Cancelado') {
+    doc.setTextColor(220, 38, 38); doc.setFontSize(11);
+    doc.text('DOCUMENTO CANCELADO', W / 2, 50, { align: 'center' });
+  }
+
+  let y = 56;
+  const box = (title, rows) => {
+    doc.setFillColor(247, 245, 250); doc.setDrawColor(236, 232, 240);
+    doc.roundedRect(M, y, W - 2 * M, 8 + rows.length * 8, 2, 2, 'FD');
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(176, 18, 78); doc.text(title, M + 5, y + 6);
+    rows.forEach((row, i) => {
+      doc.setFont('helvetica', 'bold'); doc.setTextColor(107, 100, 117); doc.setFontSize(9); doc.text(row[0], M + 5, y + 14 + i * 8);
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(20, 17, 26); doc.text(String(row[1] || '—'), M + 55, y + 14 + i * 8);
+    });
+    y += 14 + rows.length * 8;
+  };
+  box('DATOS DEL BIEN', [['Folio de inventario', a.folio], ['Tipo de equipo', a.tipos_equipo?.nombre], ['Marca / modelo', `${a.marca || ''} ${a.modelo || ''}`.trim()], ['Número de serie', a.num_serie], ['Módulo asignado', a.modulos?.nombre]]);
+  box('DATOS DEL RESPONSABLE', [['Nombre', p.nombre], ['Puesto', p.puesto], ['Correo institucional', p.correo], ['No. de empleado', p.num_empleado]]);
+
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(20, 17, 26);
+  const txt = 'Recibo de conformidad el bien informático descrito, en buen estado de funcionamiento, y me comprometo a darle un uso adecuado y exclusivamente para las actividades institucionales, así como a notificar al área de Tecnologías de la Información cualquier falla, extravío o cambio de adscripción, para su reasignación o devolución.';
+  doc.text(doc.splitTextToSize(txt, W - 2 * M), M, y + 2); y += 24;
+
+  if (r.firma_url) doc.addImage(r.firma_url, 'PNG', M + 5, y, 70, 26);
+  doc.setDrawColor(20, 17, 26); doc.line(M + 5, y + 28, M + 75, y + 28);
+  doc.setFontSize(9); doc.setFont('helvetica', 'bold'); doc.setTextColor(20, 17, 26);
+  doc.text(p.nombre || '', M + 40, y + 33, { align: 'center' });
+  doc.setFont('helvetica', 'normal'); doc.setTextColor(107, 100, 117);
+  doc.text('Firma del responsable', M + 40, y + 38, { align: 'center' });
+
+  const qr = qrData(`RESGUARDO|${r.folio}|${a.folio}|${a.num_serie}|${r.codigo_verificacion}`);
+  doc.addImage(qr, 'PNG', W - M - 38, y - 4, 38, 38);
+  doc.setFontSize(8); doc.text('Código de verificación', W - M - 19, y + 38, { align: 'center' });
+  doc.setFont('courier', 'bold'); doc.setTextColor(176, 18, 78); doc.text(r.codigo_verificacion, W - M - 19, y + 43, { align: 'center' });
+
+  y += 54;
+  doc.setDrawColor(236, 232, 240); doc.line(M, y, W - M, y);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(8.5); doc.setTextColor(20, 17, 26); doc.text('AVISO DE PRIVACIDAD SIMPLIFICADO', M, y + 6);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(107, 100, 117);
+  const aviso = 'Los datos personales recabados se utilizarán exclusivamente para el control y resguardo de los bienes informáticos asignados, conforme a la Ley General de Protección de Datos Personales en Posesión de Sujetos Obligados (LGPDPPSO). El titular podrá ejercer sus derechos de acceso, rectificación, cancelación y oposición (ARCO) ante la Unidad de Transparencia del Instituto.';
+  doc.text(doc.splitTextToSize(aviso, W - 2 * M), M, y + 11);
+  doc.setFontSize(7.5);
+  doc.text(`Documento generado electrónicamente por el Sistema de Inventario Tecnológico · ${new Date().toLocaleString('es-MX')}`, W / 2, 270, { align: 'center' });
+
+  doc.save(`${r.folio}.pdf`);
+  toast('PDF del resguardo descargado');
+}
+
+$('#q').addEventListener('input', render);
+$('#menuBtn').addEventListener('click', () => $('#sidebar').classList.toggle('open'));
+window.addEventListener('resize', () => { if (step === 2 && $('#mNew').classList.contains('show')) resizePad(); });
+
+(async function init() {
+  perfil = await iniciarPagina();
+  if (!perfil) return;
+  if (!puedeEditar()) $('#btnNew').style.display = 'none';
+  await cargar();
+})();
+</script>
+</body>
+</html>
