@@ -485,7 +485,13 @@ function openDetail(dbId) {
     <div class="full"><small>Resguardo</small><b style="color:${a.resguardo === 'Con resguardo' ? 'var(--ok)' : 'var(--danger)'}">${a.resguardo === 'Con resguardo' ? 'Firmado' : 'Pendiente de firma'}</b></div>
   </div>`;
   $('#dQR').innerHTML = '';
-  new QRCode($('#dQR'), { text: `${a.folio}|${a.serie}|${a.tipo}|${a.modulo}`, width: 180, height: 180, colorDark: '#14111A' });
+  try {
+    const url = new URL('inventario.html?folio=' + encodeURIComponent(a.folio), location.href).href;
+    new QRCode($('#dQR'), { text: url, width: 180, height: 180, colorDark: '#14111A', correctLevel: QRCode.CorrectLevel.M });
+  } catch (e) {
+    console.error('QR:', e);
+    $('#dQR').textContent = 'No se pudo generar el código QR';
+  }
   $('#dQRtxt').textContent = a.folio;
   $('#dEdit').style.display = puedeEditar() ? '' : 'none';
   $('#dBaja').style.display = puedeEditar() && a.estado !== 'Baja' ? '' : 'none';
