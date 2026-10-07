@@ -160,16 +160,16 @@ tbody tr:hover td{background:#FCFBFD}
   <div class="sb-section">General</div>
   <a href="dashboard.html" class="sb-link"><i class="fas fa-grip"></i>Dashboard</a>
   <a href="inventario.html" class="sb-link active"><i class="fas fa-laptop"></i>Inventario<span class="count" id="sbCount">0</span></a>
-  <a href="#" class="sb-link"><i class="fas fa-building"></i>Módulos</a>
+  <a href="modulos.html" class="sb-link"><i class="fas fa-building"></i>Módulos</a>
   <a href="responsables.html" class="sb-link"><i class="fas fa-users"></i>Responsables</a>
   <div class="sb-section">Gestión</div>
   <a href="resguardos.html" class="sb-link"><i class="fas fa-file-signature"></i>Resguardos</a>
-  <a href="#" class="sb-link"><i class="fas fa-qrcode"></i>Códigos QR</a>
-  <a href="#" class="sb-link"><i class="fas fa-clock-rotate-left"></i>Historial</a>
-  <a href="#" class="sb-link"><i class="fas fa-chart-pie"></i>Reportes</a>
+  <a href="qr.html" class="sb-link"><i class="fas fa-qrcode"></i>Códigos QR</a>
+  <a href="historial.html" class="sb-link"><i class="fas fa-clock-rotate-left"></i>Historial</a>
+  <a href="#" class="sb-link" onclick="alert('Módulo de reportes en desarrollo (Sprint 4).');return false;"><i class="fas fa-chart-pie"></i>Reportes<span class="count">Pronto</span></a>
   <div class="sb-section">Sistema</div>
-  <a href="#" class="sb-link"><i class="fas fa-user-shield"></i>Usuarios y roles</a>
-  <a href="#" class="sb-link"><i class="fas fa-gear"></i>Configuración</a>
+  <a href="#" class="sb-link" onclick="alert('Los usuarios se administran desde Supabase. Pantalla en desarrollo.');return false;"><i class="fas fa-user-shield"></i>Usuarios y roles<span class="count">Pronto</span></a>
+  <a href="#" class="sb-link" onclick="alert('Configuración en desarrollo.');return false;"><i class="fas fa-gear"></i>Configuración<span class="count">Pronto</span></a>
   <div class="sb-user">
     <div class="avatar">—</div>
     <div><strong>Cargando…</strong><span>Rol: —</span></div>
@@ -598,6 +598,8 @@ $('#addForm').addEventListener('submit', async e => {
   cerrarRegistro();
   editId = null;
   await cargarDatos();
+  const mod = new URLSearchParams(location.search).get('modulo');
+  if (mod) { state.mod = mod; $('#fMod').value = mod; render(); }
   toast(esEdicion ? `Activo ${res.data.folio} actualizado` : `Activo ${res.data.folio} registrado correctamente`);
 });
 
@@ -619,7 +621,22 @@ $('#dBaja').addEventListener('click', async () => {
   try { await cargarCatalogos(); }
   catch (err) { console.error('Error en catálogos:', err); toast('No se pudieron cargar los catálogos: ' + err.message, true); }
   await cargarDatos();
-  if (new URLSearchParams(location.search).has('nuevo') && puedeEditar()) abrirRegistro();
+
+  const params = new URLSearchParams(location.search);
+
+  // Abrir el formulario de registro (desde el Dashboard)
+  if (params.has('nuevo') && puedeEditar()) abrirRegistro();
+
+  // Filtrar por módulo (desde la página de Módulos)
+  const mod = params.get('modulo');
+  if (mod) { state.mod = mod; $('#fMod').value = mod; render(); }
+
+  // Abrir la ficha de un activo (al escanear su código QR)
+  const folio = params.get('folio');
+  if (folio) {
+    const a = activos.find(x => x.folio === folio);
+    a ? openDetail(a.dbId) : toast('No se encontró el activo ' + folio, true);
+  }
 })();
 </script>
 </body>

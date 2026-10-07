@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Códigos QR · INE Veracruz</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<style>
+:root{--primary:#B0124E;--primary-dark:#7A0C36;--primary-light:#E8417F;--ink:#14111A;--muted:#6B6475;--line:#ECE8F0;--bg:#F7F5FA;--ok:#16A34A;--danger:#DC2626;--sidebar:260px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+a{text-decoration:none;color:inherit}button{font:inherit;cursor:pointer}
+.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);z-index:40;background:radial-gradient(140% 80% at 0% 0%,#C2185B 0%,#7A0C36 50%,#2A0614 100%);color:#fff;display:flex;flex-direction:column;padding:22px 16px;transition:transform .3s}
+.sb-brand{display:flex;align-items:center;gap:12px;padding:6px 8px 22px;border-bottom:1px solid rgba(255,255,255,.12)}
+.sb-mark{width:56px;height:56px;display:grid;place-items:center;flex-shrink:0}.sb-mark img{width:100%;height:100%;object-fit:contain}
+.sb-brand strong{display:block;font-size:14px}.sb-brand span{font-size:11.5px;opacity:.7}
+.sb-section{font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;opacity:.5;margin:22px 12px 8px}
+.sb-link{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-size:13.5px;font-weight:500;color:rgba(255,255,255,.78);transition:all .2s;margin-bottom:2px}
+.sb-link i{width:18px;text-align:center;font-size:14px}
+.sb-link:hover{background:rgba(255,255,255,.09);color:#fff}
+.sb-link.active{background:rgba(255,255,255,.16);color:#fff;font-weight:600;box-shadow:inset 3px 0 0 #fff}
+.sb-link .count{margin-left:auto;font-size:11px;background:rgba(255,255,255,.18);padding:2px 8px;border-radius:999px}
+.sb-user{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#FFD1E3,#fff);color:var(--primary);display:grid;place-items:center;font-weight:800;font-size:13px;flex-shrink:0}
+.sb-user strong{display:block;font-size:13px}.sb-user span{font-size:11px;opacity:.7}.sb-user a{margin-left:auto;opacity:.7}
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:16px;padding:16px 32px;background:rgba(247,245,250,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.menu-btn{display:none;border:1px solid var(--line);background:#fff;width:40px;height:40px;border-radius:10px}
+.crumbs{font-size:12.5px;color:var(--muted)}.crumbs b{color:var(--primary)}
+.page-title h1{font-size:20px;font-weight:800;letter-spacing:-.4px}
+.top-actions{margin-left:auto;display:flex;gap:10px;align-items:center}
+.content{padding:28px 32px 40px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:11px;padding:11px 18px;font-size:13.5px;font-weight:700;transition:all .2s}
+.btn-primary{background:linear-gradient(135deg,var(--primary-light),var(--primary));color:#fff;box-shadow:0 8px 18px -8px rgba(176,18,78,.6)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-light{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn-light:hover{border-color:var(--primary);color:var(--primary)}
+.sel-count{font-size:13px;color:var(--muted)}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px}
+.tools{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.search{flex:1;min-width:220px;display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:11px;padding:0 14px}
+.search:focus-within{border-color:var(--primary)}
+.search i{color:#A39CAD;font-size:13px}
+.search input{border:0;outline:0;padding:11px 0;width:100%;font:inherit;font-size:13.5px}
+.select{border:1.5px solid var(--line);border-radius:11px;padding:10px 12px;font:inherit;font-size:13px;background:#fff;outline:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.card{position:relative;border:1.5px solid var(--line);border-radius:14px;padding:14px;display:flex;gap:12px;align-items:center;cursor:pointer;transition:all .15s;background:#fff}
+.card:hover{border-color:#D9C2CD}
+.card.on{border-color:var(--primary);box-shadow:0 0 0 4px rgba(176,18,78,.08)}
+.card input{position:absolute;top:10px;right:10px;width:17px;height:17px;accent-color:var(--primary)}
+.card .qr{width:72px;height:72px;flex-shrink:0}
+.card .qr img,.card .qr canvas{width:72px!important;height:72px!important}
+.card b{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;display:block}
+.card span{font-size:12.5px;display:block}
+.card small{font-size:11.5px;color:var(--muted);display:block}
+.msg{text-align:center;padding:40px;color:var(--muted);font-size:13px;grid-column:1/-1}
+.tip{display:flex;gap:10px;padding:12px 16px;border-radius:12px;background:#EEF2FF;border:1px solid #D6DEFF;color:#2F3E8F;font-size:12.5px;margin-bottom:18px}
+
+/* Hoja de impresión */
+#hoja{display:none}
+@media print{
+  @page{size:letter;margin:10mm}
+  body{background:#fff}
+  .sidebar,.main,.toast{display:none!important}
+  #hoja{display:grid;grid-template-columns:repeat(3,1fr);gap:4mm}
+  .label{border:1px dashed #999;border-radius:3mm;padding:3mm;display:flex;gap:3mm;align-items:center;break-inside:avoid;height:32mm}
+  .label .lq{width:26mm;height:26mm;flex-shrink:0}
+  .label .lq img,.label .lq canvas{width:26mm!important;height:26mm!important}
+  .label .lt{font-family:Arial,sans-serif;font-size:7.5pt;line-height:1.3;min-width:0}
+  .label .lt .h{display:flex;align-items:center;gap:1.5mm;font-weight:700;font-size:7pt;color:#B0124E;margin-bottom:1mm}
+  .label .lt .h img{height:4mm}
+  .label .lt b{font-family:Consolas,monospace;font-size:9pt;display:block}
+  .label .lt span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
+.toast{position:fixed;bottom:24px;right:24px;z-index:80;display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:12px;background:var(--ink);color:#fff;font-size:13.5px;transform:translateY(20px);opacity:0;pointer-events:none;transition:all .35s}
+.toast.show{transform:none;opacity:1}.toast i{color:#F87171}
+@media (max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.main{margin-left:0}.menu-btn{display:grid;place-items:center}.content,.topbar{padding-left:18px;padding-right:18px}}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-mark"><img src="img/logo-ine.png" alt="Logo INE"></div>
+    <div><strong>INE Veracruz</strong><span>Inventario Tecnológico</span></div>
+  </div>
+  <div class="sb-section">General</div>
+  <a href="dashboard.html" class="sb-link"><i class="fas fa-grip"></i>Dashboard</a>
+  <a href="inventario.html" class="sb-link"><i class="fas fa-laptop"></i>Inventario</a>
+  <a href="modulos.html" class="sb-link"><i class="fas fa-building"></i>Módulos</a>
+  <a href="responsables.html" class="sb-link"><i class="fas fa-users"></i>Responsables</a>
+  <div class="sb-section">Gestión</div>
+  <a href="resguardos.html" class="sb-link"><i class="fas fa-file-signature"></i>Resguardos</a>
+  <a href="qr.html" class="sb-link active"><i class="fas fa-qrcode"></i>Códigos QR</a>
+  <a href="historial.html" class="sb-link"><i class="fas fa-clock-rotate-left"></i>Historial</a>
+  <a href="#" class="sb-link" onclick="alert('Módulo de reportes en desarrollo (Sprint 4).');return false;"><i class="fas fa-chart-pie"></i>Reportes<span class="count">Pronto</span></a>
+  <div class="sb-section">Sistema</div>
+  <a href="#" class="sb-link" onclick="alert('Los usuarios se administran desde Supabase. Pantalla en desarrollo.');return false;"><i class="fas fa-user-shield"></i>Usuarios y roles<span class="count">Pronto</span></a>
+  <a href="#" class="sb-link" onclick="alert('Configuración en desarrollo.');return false;"><i class="fas fa-gear"></i>Configuración<span class="count">Pronto</span></a>
+  <div class="sb-user">
+    <div class="avatar">—</div>
+    <div><strong>Cargando…</strong><span>Rol: —</span></div>
+    <a href="#" onclick="cerrarSesion()" title="Cerrar sesión"><i class="fas fa-arrow-right-from-bracket"></i></a>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><div class="crumbs">Gestión / <b>Códigos QR</b></div><h1>Etiquetas con código QR</h1></div>
+    <div class="top-actions">
+      <span class="sel-count" id="selCount">0 seleccionados</span>
+      <button class="btn btn-primary" id="btnPrint" disabled><i class="fas fa-print"></i>Imprimir etiquetas</button>
+    </div>
+  </header>
+
+  <section class="content">
+    <div class="tip"><i class="fas fa-circle-info" style="margin-top:2px"></i>
+      <div>Selecciona los activos, imprime las etiquetas en hoja carta (3 columnas) y pégalas en cada equipo. Al escanear el código con un celular se abre la ficha del activo en el sistema.</div>
+    </div>
+
+    <div class="panel">
+      <div class="tools">
+        <div class="search"><i class="fas fa-magnifying-glass"></i><input id="q" placeholder="Buscar por folio, serie o tipo…"></div>
+        <select class="select" id="fMod"><option value="">Todos los módulos</option></select>
+        <select class="select" id="fTipo"><option value="">Todos los tipos</option></select>
+        <button class="btn btn-light" id="btnAll"><i class="fas fa-check-double"></i>Seleccionar visibles</button>
+        <button class="btn btn-light" id="btnNone"><i class="fas fa-xmark"></i>Quitar selección</button>
+      </div>
+      <div class="grid" id="grid"><p class="msg"><i class="fas fa-spinner fa-spin"></i> Cargando…</p></div>
+    </div>
+  </section>
+</div>
+
+<div id="hoja"></div>
+<div class="toast" id="toast"><i class="fas fa-circle-exclamation"></i><span id="toastMsg"></span></div>
+
+<script>
+const $ = s => document.querySelector(s);
+let activos = [], seleccion = new Set();
+
+function toast(m) { $('#toastMsg').textContent = m; $('#toast').classList.add('show'); setTimeout(() => $('#toast').classList.remove('show'), 3000); }
+
+// Dirección que se abre al escanear: la ficha del activo en Inventario
+const urlActivo = folio => new URL('inventario.html?folio=' + encodeURIComponent(folio), location.href).href;
+
+function dibujarQR(el, folio, tam) {
+  el.innerHTML = '';
+  new QRCode(el, { text: urlActivo(folio), width: tam, height: tam, colorDark: '#14111A', correctLevel: QRCode.CorrectLevel.M });
+}
+
+async function cargar() {
+  const { data, error } = await db.from('v_inventario').select('id, folio, tipo, marca, modelo, num_serie, modulo, estado').neq('estado', 'Baja').order('folio');
+  if (error) { console.error(error); $('#grid').innerHTML = `<p class="msg" style="color:var(--danger)">No se pudo cargar: ${esc(error.message)}</p>`; return; }
+  activos = data;
+  $('#fMod').innerHTML = '<option value="">Todos los módulos</option>' + [...new Set(data.map(a => a.modulo).filter(Boolean))].sort().map(m => `<option>${esc(m)}</option>`).join('');
+  $('#fTipo').innerHTML = '<option value="">Todos los tipos</option>' + [...new Set(data.map(a => a.tipo))].sort().map(t => `<option>${esc(t)}</option>`).join('');
+  render();
+}
+
+function visibles() {
+  const q = $('#q').value.toLowerCase(), m = $('#fMod').value, t = $('#fTipo').value;
+  return activos.filter(a => (!m || a.modulo === m) && (!t || a.tipo === t) &&
+    (!q || [a.folio, a.num_serie, a.tipo].join(' ').toLowerCase().includes(q)));
+}
+
+function render() {
+  const list = visibles();
+  if (!activos.length) { $('#grid').innerHTML = '<p class="msg">No hay activos en uso. Registra activos en Inventario.</p>'; actualizarContador(); return; }
+  if (!list.length) { $('#grid').innerHTML = '<p class="msg">No hay coincidencias.</p>'; actualizarContador(); return; }
+  $('#grid').innerHTML = list.map(a => `
+    <label class="card ${seleccion.has(a.id) ? 'on' : ''}" data-id="${a.id}">
+      <input type="checkbox" ${seleccion.has(a.id) ? 'checked' : ''}>
+      <div class="qr" id="qr-${a.id}"></div>
+      <div><b>${esc(a.folio)}</b><span>${esc(a.tipo)}</span><small>${esc(a.num_serie)}</small><small>${esc(a.modulo || 'Sin módulo')}</small></div>
+    </label>`).join('');
+  list.forEach(a => dibujarQR(document.getElementById('qr-' + a.id), a.folio, 144));
+  actualizarContador();
+}
+
+function actualizarContador() {
+  $('#selCount').textContent = `${seleccion.size} seleccionado${seleccion.size === 1 ? '' : 's'}`;
+  $('#btnPrint').disabled = seleccion.size === 0;
+}
+
+$('#grid').addEventListener('change', e => {
+  const card = e.target.closest('.card'); if (!card) return;
+  const id = +card.dataset.id;
+  e.target.checked ? seleccion.add(id) : seleccion.delete(id);
+  card.classList.toggle('on', e.target.checked);
+  actualizarContador();
+});
+$('#btnAll').addEventListener('click', () => { visibles().forEach(a => seleccion.add(a.id)); render(); });
+$('#btnNone').addEventListener('click', () => { seleccion.clear(); render(); });
+['#q', '#fMod', '#fTipo'].forEach(s => $(s).addEventListener('input', render));
+$('#menuBtn').addEventListener('click', () => $('#sidebar').classList.toggle('open'));
+
+$('#btnPrint').addEventListener('click', () => {
+  const lista = activos.filter(a => seleccion.has(a.id));
+  if (!lista.length) return toast('Selecciona al menos un activo');
+  $('#hoja').innerHTML = lista.map(a => `
+    <div class="label">
+      <div class="lq" id="pq-${a.id}"></div>
+      <div class="lt">
+        <div class="h"><img src="img/logo-ine.png" alt="">INE VERACRUZ</div>
+        <b>${esc(a.folio)}</b>
+        <span>${esc(a.tipo)}</span>
+        <span>S/N: ${esc(a.num_serie)}</span>
+        <span>${esc(a.modulo || '')}</span>
+      </div>
+    </div>`).join('');
+  lista.forEach(a => dibujarQR(document.getElementById('pq-' + a.id), a.folio, 256));
+  setTimeout(() => window.print(), 400);
+});
+
+(async function init() {
+  const perfil = await iniciarPagina();
+  if (!perfil) return;
+  await cargar();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Historial · INE Veracruz</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<style>
+:root{--primary:#B0124E;--primary-dark:#7A0C36;--primary-light:#E8417F;--ink:#14111A;--muted:#6B6475;--line:#ECE8F0;--bg:#F7F5FA;--ok:#16A34A;--warn:#D97706;--danger:#DC2626;--info:#2563EB;--sidebar:260px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+a{text-decoration:none;color:inherit}button{font:inherit;cursor:pointer}
+.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);z-index:40;background:radial-gradient(140% 80% at 0% 0%,#C2185B 0%,#7A0C36 50%,#2A0614 100%);color:#fff;display:flex;flex-direction:column;padding:22px 16px;transition:transform .3s}
+.sb-brand{display:flex;align-items:center;gap:12px;padding:6px 8px 22px;border-bottom:1px solid rgba(255,255,255,.12)}
+.sb-mark{width:56px;height:56px;display:grid;place-items:center;flex-shrink:0}.sb-mark img{width:100%;height:100%;object-fit:contain}
+.sb-brand strong{display:block;font-size:14px}.sb-brand span{font-size:11.5px;opacity:.7}
+.sb-section{font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;opacity:.5;margin:22px 12px 8px}
+.sb-link{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-size:13.5px;font-weight:500;color:rgba(255,255,255,.78);transition:all .2s;margin-bottom:2px}
+.sb-link i{width:18px;text-align:center;font-size:14px}
+.sb-link:hover{background:rgba(255,255,255,.09);color:#fff}
+.sb-link.active{background:rgba(255,255,255,.16);color:#fff;font-weight:600;box-shadow:inset 3px 0 0 #fff}
+.sb-user{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#FFD1E3,#fff);color:var(--primary);display:grid;place-items:center;font-weight:800;font-size:13px;flex-shrink:0}
+.sb-user strong{display:block;font-size:13px}.sb-user span{font-size:11px;opacity:.7}.sb-user a{margin-left:auto;opacity:.7}
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:16px;padding:16px 32px;background:rgba(247,245,250,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.menu-btn{display:none;border:1px solid var(--line);background:#fff;width:40px;height:40px;border-radius:10px}
+.crumbs{font-size:12.5px;color:var(--muted)}.crumbs b{color:var(--primary)}
+.page-title h1{font-size:20px;font-weight:800;letter-spacing:-.4px}
+.top-actions{margin-left:auto;display:flex;gap:10px}
+.content{padding:28px 32px 40px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:11px;padding:11px 18px;font-size:13.5px;font-weight:700;transition:all .2s}
+.btn-light{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn-light:hover{border-color:var(--primary);color:var(--primary)}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.sum{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px}
+.sum i{width:40px;height:40px;border-radius:11px;display:grid;place-items:center}
+.sum b{font-size:20px;font-weight:800;display:block}.sum span{font-size:12px;color:var(--muted)}
+.c1{background:#FDECF3;color:var(--primary)}.c2{background:#EEF2FF;color:var(--info)}.c3{background:#ECFDF3;color:var(--ok)}.c4{background:#FFF7ED;color:var(--warn)}.c5{background:#FEF2F2;color:var(--danger)}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px}
+.filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:10px;margin-bottom:20px}
+.search{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:11px;padding:0 14px}
+.search:focus-within{border-color:var(--primary)}
+.search i{color:#A39CAD;font-size:13px}
+.search input{border:0;outline:0;padding:11px 0;width:100%;font:inherit;font-size:13.5px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field label{font-size:11px;color:var(--muted);font-weight:600}
+.select,.date{border:1.5px solid var(--line);border-radius:11px;padding:9px 12px;font:inherit;font-size:13px;background:#fff;outline:0;color:var(--ink)}
+.select:focus,.date:focus{border-color:var(--primary)}
+.day{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;margin:22px 0 12px}
+.day:first-child{margin-top:0}
+.ev{display:flex;gap:14px;padding:14px;border:1px solid var(--line);border-radius:14px;margin-bottom:10px;transition:background .15s}
+.ev:hover{background:#FCFBFD}
+.ev-ico{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;flex-shrink:0}
+.ev-body{flex:1;min-width:0}
+.ev-body b{font-size:13.5px}
+.ev-meta{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:6px;font-size:12px;color:var(--muted)}
+.ev-meta i{margin-right:5px}
+.ev-time{font-size:12px;color:var(--muted);white-space:nowrap}
+.mono{font-family:ui-monospace,Consolas,monospace;font-size:12.5px}
+.msg{text-align:center;padding:40px;color:var(--muted);font-size:13px}
+.more{display:flex;justify-content:center;margin-top:14px}
+.toast{position:fixed;bottom:24px;right:24px;z-index:80;display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:12px;background:var(--ink);color:#fff;font-size:13.5px;transform:translateY(20px);opacity:0;pointer-events:none;transition:all .35s}
+.toast.show{transform:none;opacity:1}.toast i{color:#4ADE80}
+@media (max-width:1200px){.filters{grid-template-columns:1fr 1fr}.summary{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.main{margin-left:0}.menu-btn{display:grid;place-items:center}.content,.topbar{padding-left:18px;padding-right:18px}}
+@media (max-width:560px){.filters,.summary{grid-template-columns:1fr}.ev{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-mark"><img src="img/logo-ine.png" alt="Logo INE"></div>
+    <div><strong>INE Veracruz</strong><span>Inventario Tecnológico</span></div>
+  </div>
+  <div class="sb-section">General</div>
+  <a href="dashboard.html" class="sb-link"><i class="fas fa-grip"></i>Dashboard</a>
+  <a href="inventario.html" class="sb-link"><i class="fas fa-laptop"></i>Inventario</a>
+  <a href="modulos.html" class="sb-link"><i class="fas fa-building"></i>Módulos</a>
+  <a href="responsables.html" class="sb-link"><i class="fas fa-users"></i>Responsables</a>
+  <div class="sb-section">Gestión</div>
+  <a href="resguardos.html" class="sb-link"><i class="fas fa-file-signature"></i>Resguardos</a>
+  <a href="qr.html" class="sb-link"><i class="fas fa-qrcode"></i>Códigos QR</a>
+  <a href="historial.html" class="sb-link active"><i class="fas fa-clock-rotate-left"></i>Historial</a>
+  <a href="#" class="sb-link" onclick="alert('Módulo de reportes en desarrollo (Sprint 4).');return false;"><i class="fas fa-chart-pie"></i>Reportes<span class="count">Pronto</span></a>
+  <div class="sb-section">Sistema</div>
+  <a href="#" class="sb-link" onclick="alert('Los usuarios se administran desde Supabase. Pantalla en desarrollo.');return false;"><i class="fas fa-user-shield"></i>Usuarios y roles<span class="count">Pronto</span></a>
+  <a href="#" class="sb-link" onclick="alert('Configuración en desarrollo.');return false;"><i class="fas fa-gear"></i>Configuración<span class="count">Pronto</span></a>
+  <div class="sb-user">
+    <div class="avatar">—</div>
+    <div><strong>Cargando…</strong><span>Rol: —</span></div>
+    <a href="#" onclick="cerrarSesion()" title="Cerrar sesión"><i class="fas fa-arrow-right-from-bracket"></i></a>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><div class="crumbs">Gestión / <b>Historial</b></div><h1>Historial de movimientos</h1></div>
+    <div class="top-actions"><button class="btn btn-light" id="btnExport"><i class="fas fa-file-csv"></i>Exportar</button></div>
+  </header>
+
+  <section class="content">
+    <div class="summary">
+      <div class="sum"><i class="fas fa-list c1"></i><div><b id="sTotal">0</b><span>Movimientos</span></div></div>
+      <div class="sum"><i class="fas fa-plus c3"></i><div><b id="sAlta">0</b><span>Altas</span></div></div>
+      <div class="sum"><i class="fas fa-right-left c2"></i><div><b id="sMov">0</b><span>Reasignaciones y cambios</span></div></div>
+      <div class="sum"><i class="fas fa-file-signature c4"></i><div><b id="sRes">0</b><span>Resguardos</span></div></div>
+    </div>
+
+    <div class="panel">
+      <div class="filters">
+        <div class="field"><label>Buscar</label>
+          <div class="search"><i class="fas fa-magnifying-glass"></i><input id="q" placeholder="Folio, serie, equipo o usuario…"></div></div>
+        <div class="field"><label>Tipo de movimiento</label>
+          <select class="select" id="fTipo">
+            <option value="">Todos</option>
+            <option value="Alta">Altas</option>
+            <option value="Cambio de estado">Cambios de estado</option>
+            <option value="Reasignación">Reasignaciones de módulo</option>
+            <option value="Cambio de responsable">Cambios de responsable</option>
+            <option value="Resguardo">Resguardos</option>
+          </select></div>
+        <div class="field"><label>Desde</label><input type="date" class="date" id="fDesde"></div>
+        <div class="field"><label>Hasta</label><input type="date" class="date" id="fHasta"></div>
+        <div class="field"><label>&nbsp;</label><button class="btn btn-light" id="btnClear" title="Limpiar filtros"><i class="fas fa-rotate-left"></i></button></div>
+      </div>
+      <div id="lista"><p class="msg"><i class="fas fa-spinner fa-spin"></i> Cargando…</p></div>
+      <div class="more" id="moreBox" style="display:none"><button class="btn btn-light" id="btnMore"><i class="fas fa-chevron-down"></i>Cargar más</button></div>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast"><i class="fas fa-circle-check"></i><span id="toastMsg"></span></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const TAM = 100;
+let eventos = [], pagina = 0, hayMas = false;
+
+function toast(m) { $('#toastMsg').textContent = m; $('#toast').classList.add('show'); setTimeout(() => $('#toast').classList.remove('show'), 2600); }
+
+function estilo(accion) {
+  if (accion.startsWith('Alta')) return ['fa-plus', 'c3'];
+  if (accion.startsWith('Resguardo')) return accion.includes('cancelado') ? ['fa-file-circle-xmark', 'c5'] : ['fa-file-signature', 'c4'];
+  if (accion.includes('Baja')) return ['fa-ban', 'c5'];
+  if (accion.includes('Mantenimiento')) return ['fa-screwdriver-wrench', 'c4'];
+  if (accion.includes('Reasignación')) return ['fa-right-left', 'c2'];
+  if (accion.includes('responsable')) return ['fa-user-pen', 'c2'];
+  return ['fa-pen', 'c1'];
+}
+
+function consulta() {
+  let q = db.from('historial')
+    .select('id, accion, fecha, activos(folio, num_serie, tipos_equipo(nombre)), perfiles(nombre)')
+    .order('fecha', { ascending: false });
+  const tipo = $('#fTipo').value, desde = $('#fDesde').value, hasta = $('#fHasta').value;
+  if (tipo) q = q.ilike('accion', tipo + '%');
+  if (desde) q = q.gte('fecha', new Date(desde + 'T00:00:00').toISOString());
+  if (hasta) q = q.lte('fecha', new Date(hasta + 'T23:59:59').toISOString());
+  return q;
+}
+
+async function cargar(reiniciar = true) {
+  if (reiniciar) { pagina = 0; eventos = []; $('#lista').innerHTML = '<p class="msg"><i class="fas fa-spinner fa-spin"></i> Cargando…</p>'; }
+  const { data, error } = await consulta().range(pagina * TAM, pagina * TAM + TAM - 1);
+  if (error) {
+    console.error(error);
+    $('#lista').innerHTML = `<p class="msg" style="color:var(--danger)">No se pudo cargar el historial: ${esc(error.message)}</p>`;
+    return;
+  }
+  eventos = eventos.concat(data);
+  hayMas = data.length === TAM;
+  render();
+}
+
+function filtrados() {
+  const q = $('#q').value.toLowerCase();
+  return eventos.filter(e => !q || [e.accion, e.activos?.folio, e.activos?.num_serie, e.activos?.tipos_equipo?.nombre, e.perfiles?.nombre]
+    .join(' ').toLowerCase().includes(q));
+}
+
+function render() {
+  const list = filtrados();
+  $('#sTotal').textContent = list.length;
+  $('#sAlta').textContent = list.filter(e => e.accion.startsWith('Alta')).length;
+  $('#sMov').textContent = list.filter(e => /Reasignación|responsable|Cambio de estado/.test(e.accion)).length;
+  $('#sRes').textContent = list.filter(e => e.accion.startsWith('Resguardo')).length;
+  $('#moreBox').style.display = hayMas ? 'flex' : 'none';
+
+  if (!list.length) { $('#lista').innerHTML = '<p class="msg">No hay movimientos con esos filtros.</p>'; return; }
+
+  let html = '', diaActual = '';
+  list.forEach(e => {
+    const f = new Date(e.fecha);
+    const dia = f.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    if (dia !== diaActual) { html += `<div class="day">${dia}</div>`; diaActual = dia; }
+    const [ico, c] = estilo(e.accion);
+    html += `<div class="ev">
+      <div class="ev-ico ${c}"><i class="fas ${ico}"></i></div>
+      <div class="ev-body">
+        <b>${esc(e.accion)}</b>
+        <div class="ev-meta">
+          <span><i class="fas fa-tag"></i><span class="mono">${esc(e.activos?.folio || '—')}</span></span>
+          <span><i class="fas fa-box"></i>${esc(e.activos?.tipos_equipo?.nombre || '—')} · <span class="mono">${esc(e.activos?.num_serie || '')}</span></span>
+          <span><i class="fas fa-user"></i>${esc(e.perfiles?.nombre || 'Sistema')}</span>
+        </div>
+      </div>
+      <div class="ev-time">${f.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}</div>
+    </div>`;
+  });
+  $('#lista').innerHTML = html;
+}
+
+$('#q').addEventListener('input', render);
+['#fTipo', '#fDesde', '#fHasta'].forEach(s => $(s).addEventListener('change', () => cargar()));
+$('#btnClear').addEventListener('click', () => { ['#q', '#fTipo', '#fDesde', '#fHasta'].forEach(s => $(s).value = ''); cargar(); });
+$('#btnMore').addEventListener('click', () => { pagina++; cargar(false); });
+$('#menuBtn').addEventListener('click', () => $('#sidebar').classList.toggle('open'));
+
+$('#btnExport').addEventListener('click', () => {
+  const list = filtrados();
+  if (!list.length) return toast('No hay movimientos para exportar');
+  const filas = [['Fecha', 'Hora', 'Movimiento', 'Folio', 'Equipo', 'Serie', 'Usuario']].concat(list.map(e => {
+    const f = new Date(e.fecha);
+    return [f.toLocaleDateString('es-MX'), f.toLocaleTimeString('es-MX'), e.accion, e.activos?.folio || '',
+            e.activos?.tipos_equipo?.nombre || '', e.activos?.num_serie || '', e.perfiles?.nombre || 'Sistema'];
+  }));
+  const csv = '\uFEFF' + filas.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = 'historial_inventario.csv'; a.click();
+  toast('Historial exportado');
+});
+
+(async function init() {
+  const perfil = await iniciarPagina();
+  if (!perfil) return;
+  await cargar();
+})();
+</script>
+</body>
+</html>

@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Responsables · INE Veracruz</title>
+<title>Módulos · INE Veracruz</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js"></script>
 <style>
-:root{--primary:#B0124E;--primary-dark:#7A0C36;--primary-light:#E8417F;--ink:#14111A;--muted:#6B6475;--line:#ECE8F0;--bg:#F7F5FA;--ok:#16A34A;--warn:#D97706;--danger:#DC2626;--sidebar:260px}
+:root{--primary:#B0124E;--primary-dark:#7A0C36;--primary-light:#E8417F;--ink:#14111A;--muted:#6B6475;--line:#ECE8F0;--bg:#F7F5FA;--ok:#16A34A;--warn:#D97706;--danger:#DC2626;--info:#2563EB;--sidebar:260px}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink)}
 a{text-decoration:none;color:inherit}button{font:inherit;cursor:pointer}
@@ -38,7 +38,11 @@ a{text-decoration:none;color:inherit}button{font:inherit;cursor:pointer}
 .btn-primary:disabled{opacity:.6;cursor:not-allowed}
 .btn-light{background:#fff;color:var(--ink);border:1px solid var(--line)}
 .btn-light:hover{border-color:var(--primary);color:var(--primary)}
-.notice{display:flex;gap:10px;align-items:flex-start;padding:12px 16px;border-radius:12px;background:#FFF7ED;border:1px solid #FDE2BF;color:#8A4B08;font-size:12.5px;margin-bottom:18px}
+.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.sum{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px}
+.sum i{width:40px;height:40px;border-radius:11px;display:grid;place-items:center}
+.sum b{font-size:20px;font-weight:800;display:block}.sum span{font-size:12px;color:var(--muted)}
+.c1{background:#FDECF3;color:var(--primary)}.c2{background:#EEF2FF;color:var(--info)}.c3{background:#ECFDF3;color:var(--ok)}
 .panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px}
 .tools{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
 .search{flex:1;min-width:220px;display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:11px;padding:0 14px}
@@ -52,19 +56,15 @@ th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.6px
 th:first-child{border-radius:10px 0 0 10px}th:last-child{border-radius:0 10px 10px 0}
 td{padding:13px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
 tr:hover td{background:#FCFBFD}
-.person{display:flex;align-items:center;gap:12px}
-.person .ini{width:36px;height:36px;border-radius:50%;background:#FDECF3;color:var(--primary);display:grid;place-items:center;font-weight:800;font-size:12px}
-.person small{display:block;color:var(--muted);font-size:12px}
+td small{display:block;color:var(--muted);font-size:12px;white-space:normal;max-width:320px}
 .mono{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;color:#4B4556}
-.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;font-size:12px;font-weight:600}
-.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
-.p-ok{background:#ECFDF3;color:var(--ok)}.p-off{background:#F1F0F4;color:var(--muted)}
+.num{font-weight:700}
 .ra{width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--muted);font-size:12.5px;margin-left:4px}
 .ra:hover{background:var(--ink);color:#fff;border-color:transparent}
 .msg{text-align:center;padding:40px;color:var(--muted);font-size:13px}
 .overlay{position:fixed;inset:0;background:rgba(20,17,26,.45);backdrop-filter:blur(4px);z-index:70;display:none;align-items:center;justify-content:center;padding:20px}
 .overlay.show{display:flex}
-.modal{background:#fff;border-radius:20px;width:100%;max-width:560px;max-height:92vh;overflow:auto}
+.modal{background:#fff;border-radius:20px;width:100%;max-width:540px;max-height:92vh;overflow:auto}
 .modal-head{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--line)}
 .modal-head h3{font-size:17px;font-weight:800}
 .close{border:0;background:var(--bg);width:34px;height:34px;border-radius:10px;color:var(--muted)}
@@ -73,16 +73,14 @@ tr:hover td{background:#FCFBFD}
 .form-grid .full{grid-column:1/-1}
 .f label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px}
 .f label .req{color:var(--danger)}
-.f input,.f select{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;font:inherit;font-size:13.5px;outline:0;background:#fff}
-.f input:focus,.f select:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(176,18,78,.08)}
-.check{display:flex;align-items:center;gap:8px;font-size:13px}
-.check input{accent-color:var(--primary);width:16px;height:16px}
+.f input{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;font:inherit;font-size:13.5px;outline:0;background:#fff}
+.f input:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(176,18,78,.08)}
 .form-error{display:none;margin-top:14px;padding:10px 12px;border-radius:10px;background:#FEF2F2;color:var(--danger);font-size:13px}
 .form-error.show{display:block}
 .modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid var(--line)}
 .toast{position:fixed;bottom:24px;right:24px;z-index:80;display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:12px;background:var(--ink);color:#fff;font-size:13.5px;transform:translateY(20px);opacity:0;pointer-events:none;transition:all .35s;max-width:420px}
 .toast.show{transform:none;opacity:1}.toast i{color:#4ADE80}.toast.err i{color:#F87171}
-@media (max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.main{margin-left:0}.menu-btn{display:grid;place-items:center}.content,.topbar{padding-left:18px;padding-right:18px}.form-grid{grid-template-columns:1fr}}
+@media (max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.main{margin-left:0}.menu-btn{display:grid;place-items:center}.content,.topbar{padding-left:18px;padding-right:18px}.summary,.form-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -95,8 +93,8 @@ tr:hover td{background:#FCFBFD}
   <div class="sb-section">General</div>
   <a href="dashboard.html" class="sb-link"><i class="fas fa-grip"></i>Dashboard</a>
   <a href="inventario.html" class="sb-link"><i class="fas fa-laptop"></i>Inventario</a>
-  <a href="modulos.html" class="sb-link"><i class="fas fa-building"></i>Módulos</a>
-  <a href="responsables.html" class="sb-link active"><i class="fas fa-users"></i>Responsables<span class="count" id="sbCount">0</span></a>
+  <a href="modulos.html" class="sb-link active"><i class="fas fa-building"></i>Módulos<span class="count" id="sbCount">0</span></a>
+  <a href="responsables.html" class="sb-link"><i class="fas fa-users"></i>Responsables</a>
   <div class="sb-section">Gestión</div>
   <a href="resguardos.html" class="sb-link"><i class="fas fa-file-signature"></i>Resguardos</a>
   <a href="qr.html" class="sb-link"><i class="fas fa-qrcode"></i>Códigos QR</a>
@@ -115,25 +113,26 @@ tr:hover td{background:#FCFBFD}
 <div class="main">
   <header class="topbar">
     <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
-    <div class="page-title"><div class="crumbs">Inicio / <b>Responsables</b></div><h1>Responsables de resguardo</h1></div>
-    <div class="top-actions"><button class="btn btn-primary" id="btnAdd"><i class="fas fa-user-plus"></i>Nuevo responsable</button></div>
+    <div class="page-title"><div class="crumbs">Inicio / <b>Módulos</b></div><h1>Módulos de atención ciudadana</h1></div>
+    <div class="top-actions"><button class="btn btn-primary" id="btnAdd"><i class="fas fa-plus"></i>Nuevo módulo</button></div>
   </header>
 
   <section class="content">
-    <div class="notice"><i class="fas fa-shield-halved" style="margin-top:2px"></i>
-      <div>Esta sección contiene datos personales protegidos por la LGPDPPSO. Solo el personal autorizado puede consultarlos o modificarlos.</div>
+    <div class="summary">
+      <div class="sum"><i class="fas fa-building c1"></i><div><b id="sMod">0</b><span>Módulos registrados</span></div></div>
+      <div class="sum"><i class="fas fa-boxes-stacked c2"></i><div><b id="sAct">0</b><span>Activos en uso asignados</span></div></div>
+      <div class="sum"><i class="fas fa-users c3"></i><div><b id="sRes">0</b><span>Responsables activos</span></div></div>
     </div>
 
     <div class="panel">
       <div class="tools">
-        <div class="search"><i class="fas fa-magnifying-glass"></i><input id="q" placeholder="Buscar por nombre, puesto, correo o número de empleado…"></div>
-        <select class="select" id="fMod"><option value="">Todos los módulos</option></select>
-        <select class="select" id="fAct"><option value="">Todos</option><option value="1" selected>Activos</option><option value="0">Inactivos</option></select>
+        <div class="search"><i class="fas fa-magnifying-glass"></i><input id="q" placeholder="Buscar por clave, nombre, municipio o dirección…"></div>
+        <select class="select" id="fMun"><option value="">Todos los municipios</option></select>
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Responsable</th><th>No. de empleado</th><th>Correo</th><th>Módulo</th><th>Equipos</th><th>Estado</th><th></th></tr></thead>
-          <tbody id="tbody"><tr><td colspan="7" class="msg"><i class="fas fa-spinner fa-spin"></i> Cargando…</td></tr></tbody>
+          <thead><tr><th>Clave</th><th>Módulo</th><th>Municipio</th><th>Activos</th><th>Responsables</th><th></th></tr></thead>
+          <tbody id="tbody"><tr><td colspan="6" class="msg"><i class="fas fa-spinner fa-spin"></i> Cargando…</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -143,18 +142,16 @@ tr:hover td{background:#FCFBFD}
 <div class="overlay" id="mForm">
   <div class="modal">
     <div class="modal-head">
-      <h3><i class="fas fa-user" style="color:var(--primary);margin-right:8px"></i><span id="mTitle">Nuevo responsable</span></h3>
+      <h3><i class="fas fa-building" style="color:var(--primary);margin-right:8px"></i><span id="mTitle">Nuevo módulo</span></h3>
       <button class="close" type="button" onclick="cerrarForm()"><i class="fas fa-xmark"></i></button>
     </div>
     <form id="form" novalidate>
       <div class="modal-body">
         <div class="form-grid">
-          <div class="f full"><label>Nombre completo <span class="req">*</span></label><input id="rNombre" placeholder="Apellidos y nombre(s)"></div>
-          <div class="f"><label>Puesto</label><input id="rPuesto" placeholder="Ej. Operador de módulo"></div>
-          <div class="f"><label>No. de empleado</label><input id="rNum" placeholder="Ej. 104582"></div>
-          <div class="f"><label>Correo institucional</label><input id="rCorreo" type="email" placeholder="nombre@ine.mx"></div>
-          <div class="f"><label>Módulo <span class="req">*</span></label><select id="rModulo"></select></div>
-          <div class="f full"><label class="check"><input type="checkbox" id="rActivo" checked> Responsable activo</label></div>
+          <div class="f"><label>Clave <span class="req">*</span></label><input id="mClave" placeholder="Ej. 300151"></div>
+          <div class="f"><label>Municipio <span class="req">*</span></label><input id="mMun" placeholder="Ej. Xalapa"></div>
+          <div class="f full"><label>Nombre del módulo <span class="req">*</span></label><input id="mNombre" placeholder="Ej. MAC Xalapa Centro"></div>
+          <div class="f full"><label>Dirección</label><input id="mDir" placeholder="Calle, número, colonia"></div>
         </div>
         <div class="form-error" id="fError"></div>
       </div>
@@ -170,8 +167,8 @@ tr:hover td{background:#FCFBFD}
 
 <script>
 const $ = s => document.querySelector(s);
-let perfil = null, lista = [], modulos = [], editId = null;
-const puedeEditar = () => perfil && perfil.rol !== 'auditor';
+let perfil = null, lista = [], editId = null;
+const esAdmin = () => perfil && perfil.rol === 'administrador';
 
 function toast(msg, err = false) {
   $('#toastMsg').textContent = msg;
@@ -180,52 +177,52 @@ function toast(msg, err = false) {
   $('#toast').classList.add('show');
   setTimeout(() => $('#toast').classList.remove('show'), 3200);
 }
-const iniciales = n => n.split(' ').filter(Boolean).map(x => x[0]).join('').slice(0, 2).toUpperCase();
 
 async function cargar() {
-  const [r, m, a] = await Promise.all([
-    db.from('responsables').select('id, nombre, puesto, correo, num_empleado, modulo_id, activo, modulos(nombre)').order('nombre'),
-    db.from('modulos').select('id, nombre').order('nombre'),
-    db.from('activos').select('responsable_id').not('responsable_id', 'is', null).neq('estado', 'Baja')
+  const [m, a, r] = await Promise.all([
+    db.from('modulos').select('id, clave, nombre, municipio, direccion').order('nombre'),
+    db.from('activos').select('modulo_id').neq('estado', 'Baja'),
+    db.from('responsables').select('modulo_id').eq('activo', true)
   ]);
-  const err = r.error || m.error || a.error;
+  const err = m.error || a.error || r.error;
   if (err) {
     console.error(err);
-    $('#tbody').innerHTML = `<tr><td colspan="7" class="msg" style="color:var(--danger)">No se pudieron cargar los datos: ${esc(err.message)}</td></tr>`;
+    $('#tbody').innerHTML = `<tr><td colspan="6" class="msg" style="color:var(--danger)">No se pudieron cargar los datos: ${esc(err.message)}</td></tr>`;
     return;
   }
-  const conteo = {};
-  a.data.forEach(x => conteo[x.responsable_id] = (conteo[x.responsable_id] || 0) + 1);
-  lista = r.data.map(x => ({ ...x, modulo: x.modulos?.nombre || 'Sin módulo', equipos: conteo[x.id] || 0 }));
-  modulos = m.data;
+  const cuenta = (rows) => rows.reduce((o, x) => (o[x.modulo_id] = (o[x.modulo_id] || 0) + 1, o), {});
+  const ca = cuenta(a.data), cr = cuenta(r.data);
+  lista = m.data.map(x => ({ ...x, activos: ca[x.id] || 0, resps: cr[x.id] || 0 }));
 
-  const sel = $('#fMod').value;
-  $('#fMod').innerHTML = '<option value="">Todos los módulos</option>' + modulos.map(x => `<option value="${x.id}">${esc(x.nombre)}</option>`).join('');
-  $('#fMod').value = sel;
-  $('#rModulo').innerHTML = '<option value="">Selecciona…</option>' + modulos.map(x => `<option value="${x.id}">${esc(x.nombre)}</option>`).join('');
-  $('#sbCount').textContent = lista.filter(x => x.activo).length;
+  $('#sMod').textContent = lista.length;
+  $('#sAct').textContent = a.data.filter(x => x.modulo_id).length;
+  $('#sRes').textContent = r.data.length;
+  $('#sbCount').textContent = lista.length;
+
+  const sel = $('#fMun').value;
+  $('#fMun').innerHTML = '<option value="">Todos los municipios</option>' +
+    [...new Set(lista.map(x => x.municipio))].sort().map(x => `<option>${esc(x)}</option>`).join('');
+  $('#fMun').value = sel;
   render();
 }
 
 function render() {
-  const q = $('#q').value.toLowerCase(), fm = $('#fMod').value, fa = $('#fAct').value;
-  const rows = lista.filter(x =>
-    (!fm || String(x.modulo_id) === fm) &&
-    (fa === '' || x.activo === (fa === '1')) &&
-    (!q || [x.nombre, x.puesto, x.correo, x.num_empleado].join(' ').toLowerCase().includes(q)));
-
-  if (!lista.length) { $('#tbody').innerHTML = '<tr><td colspan="7" class="msg">Aún no hay responsables registrados. Usa <b>Nuevo responsable</b>.</td></tr>'; return; }
-  if (!rows.length)  { $('#tbody').innerHTML = '<tr><td colspan="7" class="msg">No hay coincidencias.</td></tr>'; return; }
-
+  const q = $('#q').value.toLowerCase(), mun = $('#fMun').value;
+  const rows = lista.filter(x => (!mun || x.municipio === mun) &&
+    (!q || [x.clave, x.nombre, x.municipio, x.direccion].join(' ').toLowerCase().includes(q)));
+  if (!lista.length) { $('#tbody').innerHTML = '<tr><td colspan="6" class="msg">Aún no hay módulos registrados.</td></tr>'; return; }
+  if (!rows.length) { $('#tbody').innerHTML = '<tr><td colspan="6" class="msg">No hay coincidencias.</td></tr>'; return; }
   $('#tbody').innerHTML = rows.map(x => `
     <tr>
-      <td><div class="person"><div class="ini">${esc(iniciales(x.nombre))}</div><div><b>${esc(x.nombre)}</b><small>${esc(x.puesto || '—')}</small></div></div></td>
-      <td class="mono">${esc(x.num_empleado || '—')}</td>
-      <td>${esc(x.correo || '—')}</td>
-      <td>${esc(x.modulo)}</td>
-      <td>${x.equipos}</td>
-      <td><span class="pill ${x.activo ? 'p-ok' : 'p-off'}">${x.activo ? 'Activo' : 'Inactivo'}</span></td>
-      <td>${puedeEditar() ? `<button class="ra" title="Editar" onclick="abrirForm(${x.id})"><i class="fas fa-pen"></i></button>` : ''}</td>
+      <td class="mono">${esc(x.clave)}</td>
+      <td><b>${esc(x.nombre)}</b><small>${esc(x.direccion || 'Sin dirección registrada')}</small></td>
+      <td>${esc(x.municipio)}</td>
+      <td class="num">${x.activos}</td>
+      <td class="num">${x.resps}</td>
+      <td>
+        <a class="ra" style="display:inline-grid;place-items:center" title="Ver inventario del módulo" href="inventario.html?modulo=${encodeURIComponent(x.nombre)}"><i class="fas fa-laptop"></i></a>
+        ${esAdmin() ? `<button class="ra" title="Editar" onclick="abrirForm(${x.id})"><i class="fas fa-pen"></i></button>` : ''}
+      </td>
     </tr>`).join('');
 }
 
@@ -233,53 +230,49 @@ function abrirForm(id = null) {
   editId = id;
   $('#form').reset();
   $('#fError').classList.remove('show');
-  const x = id ? lista.find(r => r.id === id) : null;
-  $('#mTitle').textContent = x ? 'Editar responsable' : 'Nuevo responsable';
-  $('#rNombre').value = x?.nombre || '';
-  $('#rPuesto').value = x?.puesto || '';
-  $('#rNum').value = x?.num_empleado || '';
-  $('#rCorreo').value = x?.correo || '';
-  $('#rModulo').value = x?.modulo_id || '';
-  $('#rActivo').checked = x ? x.activo : true;
+  const x = id ? lista.find(m => m.id === id) : null;
+  $('#mTitle').textContent = x ? 'Editar módulo' : 'Nuevo módulo';
+  $('#mClave').value = x?.clave || '';
+  $('#mNombre').value = x?.nombre || '';
+  $('#mMun').value = x?.municipio || '';
+  $('#mDir').value = x?.direccion || '';
   $('#mForm').classList.add('show');
-  setTimeout(() => $('#rNombre').focus(), 100);
+  setTimeout(() => $('#mClave').focus(), 100);
 }
 function cerrarForm() { $('#mForm').classList.remove('show'); }
 
 $('#form').addEventListener('submit', async e => {
   e.preventDefault();
   const errBox = $('#fError'); errBox.classList.remove('show');
-  const nombre = $('#rNombre').value.trim(), modulo_id = $('#rModulo').value;
-  const correo = $('#rCorreo').value.trim();
-  if (!nombre || !modulo_id) { errBox.textContent = 'Completa el nombre y el módulo.'; errBox.classList.add('show'); return; }
-  if (correo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) { errBox.textContent = 'El correo no tiene un formato válido.'; errBox.classList.add('show'); return; }
-
   const datos = {
-    nombre, modulo_id: +modulo_id,
-    puesto: $('#rPuesto').value.trim() || null,
-    num_empleado: $('#rNum').value.trim() || null,
-    correo: correo || null,
-    activo: $('#rActivo').checked
+    clave: $('#mClave').value.trim().toUpperCase(),
+    nombre: $('#mNombre').value.trim(),
+    municipio: $('#mMun').value.trim(),
+    direccion: $('#mDir').value.trim() || null
   };
+  if (!datos.clave || !datos.nombre || !datos.municipio) {
+    errBox.textContent = 'Completa la clave, el nombre y el municipio.'; errBox.classList.add('show'); return;
+  }
   const btn = $('#btnGuardar'); btn.disabled = true;
   const res = editId
-    ? await db.from('responsables').update(datos).eq('id', editId)
-    : await db.from('responsables').insert(datos);
+    ? await db.from('modulos').update(datos).eq('id', editId)
+    : await db.from('modulos').insert(datos);
   btn.disabled = false;
-
   if (res.error) {
     console.error(res.error);
-    errBox.textContent = res.error.code === '23505' ? 'Ya existe un responsable con ese número de empleado.' : 'No se pudo guardar: ' + res.error.message;
+    errBox.textContent = res.error.code === '23505' ? 'Ya existe un módulo con esa clave.'
+      : res.error.code === '42501' ? 'Solo el administrador puede registrar o editar módulos.'
+      : 'No se pudo guardar: ' + res.error.message;
     errBox.classList.add('show');
     return;
   }
   const fue = editId ? 'actualizado' : 'registrado';
   cerrarForm(); editId = null;
   await cargar();
-  toast(`Responsable ${fue} correctamente`);
+  toast(`Módulo ${fue} correctamente`);
 });
 
-['#q', '#fMod', '#fAct'].forEach(s => $(s).addEventListener('input', render));
+['#q', '#fMun'].forEach(s => $(s).addEventListener('input', render));
 $('#btnAdd').addEventListener('click', () => abrirForm());
 $('#mForm').addEventListener('click', e => { if (e.target.id === 'mForm') cerrarForm(); });
 $('#menuBtn').addEventListener('click', () => $('#sidebar').classList.toggle('open'));
@@ -287,7 +280,7 @@ $('#menuBtn').addEventListener('click', () => $('#sidebar').classList.toggle('op
 (async function init() {
   perfil = await iniciarPagina();
   if (!perfil) return;
-  if (!puedeEditar()) $('#btnAdd').style.display = 'none';
+  if (!esAdmin()) $('#btnAdd').style.display = 'none';
   await cargar();
 })();
 </script>
