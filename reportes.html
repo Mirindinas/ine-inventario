@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reportes · INE Veracruz</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<style>
+:root{--primary:#454248;--primary-dark:#2E2C30;--primary-light:#828A91;--ink:#1C1B1F;--muted:#5F5C63;--line:#E6E1DC;--bg:#F5F3F1;--ok:#16A34A;--warn:#D97706;--danger:#DC2626;--info:#2563EB;--sidebar:260px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+a{text-decoration:none;color:inherit}button{font:inherit;cursor:pointer}
+.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);z-index:40;background:radial-gradient(140% 80% at 0% 0%,#5A575E 0%,#2E2C30 50%,#1C1B1F 100%);color:#fff;display:flex;flex-direction:column;padding:22px 16px;transition:transform .3s}
+.sb-brand{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:6px 8px 22px;border-bottom:1px solid rgba(255,255,255,.12)}
+.sb-mark{width:150px;height:94px;flex-shrink:0}.sb-mark img{width:100%;height:100%;object-fit:cover;border-radius:10px}
+.sb-brand strong{display:block;font-size:14px}.sb-brand span{font-size:11.5px;opacity:.7}
+.sb-section{font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;opacity:.5;margin:22px 12px 8px}
+.sb-link{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-size:13.5px;font-weight:500;color:rgba(255,255,255,.78);transition:all .2s;margin-bottom:2px}
+.sb-link i{width:18px;text-align:center;font-size:14px}
+.sb-link:hover{background:rgba(255,255,255,.09);color:#fff}
+.sb-link.active{background:rgba(255,255,255,.16);color:#fff;font-weight:600;box-shadow:inset 3px 0 0 #fff}
+.sb-link .count{margin-left:auto;font-size:11px;background:rgba(255,255,255,.18);padding:2px 8px;border-radius:999px}
+.sb-user{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#C5A989,#fff);color:var(--primary);display:grid;place-items:center;font-weight:800;font-size:13px;flex-shrink:0}
+.sb-user strong{display:block;font-size:13px}.sb-user span{font-size:11px;opacity:.7}.sb-user a{margin-left:auto;opacity:.7}
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:16px;padding:16px 32px;background:rgba(247,245,250,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.menu-btn{display:none;border:1px solid var(--line);background:#fff;width:40px;height:40px;border-radius:10px}
+.crumbs{font-size:12.5px;color:var(--muted)}.crumbs b{color:var(--primary)}
+.page-title h1{font-size:20px;font-weight:800;letter-spacing:-.4px}
+.top-actions{margin-left:auto;display:flex;gap:10px}
+.content{padding:28px 32px 40px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:11px;padding:11px 18px;font-size:13.5px;font-weight:700;transition:all .2s}
+.btn-primary{background:linear-gradient(135deg,var(--primary-light),var(--primary));color:#fff;box-shadow:0 8px 18px -8px rgba(69,66,72,.6)}
+.btn-light{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn-light:hover{border-color:var(--primary);color:var(--primary)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px}
+.kpi i{width:40px;height:40px;border-radius:11px;display:grid;place-items:center}
+.kpi b{font-size:20px;font-weight:800;display:block}.kpi span{font-size:12px;color:var(--muted)}
+.c1{background:#F3EDE6;color:var(--primary)}.c2{background:#ECFDF3;color:var(--ok)}.c3{background:#FEF2F2;color:var(--danger)}.c4{background:#EEF2FF;color:var(--info)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.tabs button{border:1px solid var(--line);background:#fff;padding:9px 14px;border-radius:10px;font-size:13px;font-weight:600;color:var(--muted)}
+.tabs button.on{background:var(--primary);border-color:var(--primary);color:#fff}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px}
+.rep-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.rep-head h2{font-size:17px;font-weight:800}.rep-head p{font-size:12.5px;color:var(--muted);margin-top:3px}
+.filters{display:flex;gap:10px;flex-wrap:wrap}
+.select{border:1.5px solid var(--line);border-radius:11px;padding:10px 12px;font:inherit;font-size:13px;background:#fff;outline:0;color:var(--ink)}
+.select:focus{border-color:var(--primary)}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700;padding:12px 14px;background:var(--bg);white-space:nowrap}
+td{padding:12px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+th.n,td.n{text-align:right}
+tr.total td{font-weight:800;background:#FCFBFD;border-top:2px solid var(--line)}
+.mono{font-family:ui-monospace,Consolas,monospace;font-size:12.5px}
+.msg{text-align:center;padding:40px;color:var(--muted);font-size:13px}
+.print-head{display:none}
+.toast{position:fixed;bottom:24px;right:24px;z-index:80;display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:12px;background:var(--ink);color:#fff;font-size:13.5px;transform:translateY(20px);opacity:0;pointer-events:none;transition:all .35s}
+.toast.show{transform:none;opacity:1}.toast i{color:#4ADE80}.toast.err i{color:#F87171}
+@media (max-width:1100px){.kpis{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.main{margin-left:0}.menu-btn{display:grid;place-items:center}.content,.topbar{padding-left:18px;padding-right:18px}.top-actions .btn span{display:none}}
+@media (max-width:560px){.kpis{grid-template-columns:1fr}}
+@media print{
+  @page{size:letter landscape;margin:12mm}
+  body{background:#fff}
+  .sidebar,.topbar,.tabs,.filters,.toast{display:none!important}
+  .main{margin:0}.content{padding:0}
+  .panel{border:0;padding:0}
+  .kpi{border:1px solid #ccc}
+  .print-head{display:flex;align-items:center;gap:14px;border-bottom:2px solid var(--primary);padding-bottom:10px;margin-bottom:14px}
+  .print-head img{width:120px;border-radius:6px}
+  .print-head strong{display:block;font-size:14px}.print-head span{font-size:11px;color:#444}
+  th{background:#eee!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  td,th{padding:6px 8px;font-size:11px}
+}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-mark"><img src="img/logo-ine.png" alt="Logo INE"></div>
+    <div><strong>INE Veracruz</strong><span>Inventario Tecnológico</span></div>
+  </div>
+  <div class="sb-section">General</div>
+  <a href="dashboard.html" class="sb-link"><i class="fas fa-grip"></i>Dashboard</a>
+  <a href="inventario.html" class="sb-link"><i class="fas fa-laptop"></i>Inventario</a>
+  <a href="modulos.html" class="sb-link"><i class="fas fa-building"></i>Módulos</a>
+  <a href="responsables.html" class="sb-link"><i class="fas fa-users"></i>Responsables</a>
+  <div class="sb-section">Gestión</div>
+  <a href="resguardos.html" class="sb-link"><i class="fas fa-file-signature"></i>Resguardos</a>
+  <a href="qr.html" class="sb-link"><i class="fas fa-qrcode"></i>Códigos QR</a>
+  <a href="historial.html" class="sb-link"><i class="fas fa-clock-rotate-left"></i>Historial</a>
+  <a href="reportes.html" class="sb-link active"><i class="fas fa-chart-pie"></i>Reportes</a>
+  <div class="sb-section">Sistema</div>
+  <a href="usuarios.html" class="sb-link"><i class="fas fa-user-shield"></i>Usuarios y roles</a>  <a href="#" class="sb-link" onclick="alert('Configuración en desarrollo.');return false;"><i class="fas fa-gear"></i>Configuración<span class="count">Pronto</span></a>
+  <div class="sb-user">
+    <div class="avatar">—</div>
+    <div><strong>Cargando…</strong><span>Rol: —</span></div>
+    <a href="#" onclick="cerrarSesion()" title="Cerrar sesión"><i class="fas fa-arrow-right-from-bracket"></i></a>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><div class="crumbs">Inicio / <b>Reportes</b></div><h1>Reportes del inventario</h1></div>
+    <div class="top-actions">
+      <button class="btn btn-light" id="btnCsv"><i class="fas fa-file-csv"></i><span>Exportar Excel</span></button>
+      <button class="btn btn-primary" id="btnPrint"><i class="fas fa-print"></i><span>Imprimir / PDF</span></button>
+    </div>
+  </header>
+
+  <section class="content">
+    <div class="print-head">
+      <img src="img/logo-ine.png" alt="INE">
+      <div>
+        <strong>INSTITUTO NACIONAL ELECTORAL · Junta Local Ejecutiva en Veracruz</strong>
+        <span id="pInfo">—</span>
+      </div>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><i class="fas fa-boxes-stacked c1"></i><div><b id="kTotal">0</b><span>Equipos en el reporte</span></div></div>
+      <div class="kpi"><i class="fas fa-circle-check c2"></i><div><b id="kOk">0</b><span>Operativos</span></div></div>
+      <div class="kpi"><i class="fas fa-file-circle-exclamation c3"></i><div><b id="kSin">0</b><span>Sin resguardo (en uso)</span></div></div>
+      <div class="kpi"><i class="fas fa-percent c4"></i><div><b id="kPct">0%</b><span>Cobertura de resguardos</span></div></div>
+    </div>
+
+    <div class="tabs" id="tabs">
+      <button class="on" data-rep="modulo"><i class="fas fa-building"></i> Por módulo</button>
+      <button data-rep="tipo"><i class="fas fa-layer-group"></i> Por tipo</button>
+      <button data-rep="sinres"><i class="fas fa-file-circle-exclamation"></i> Sin resguardo</button>
+      <button data-rep="resp"><i class="fas fa-user"></i> Por responsable</button>
+      <button data-rep="estado"><i class="fas fa-screwdriver-wrench"></i> Mantenimiento y bajas</button>
+    </div>
+
+    <div class="panel">
+      <div class="rep-head">
+        <div><h2 id="rTitulo">—</h2><p id="rDesc">—</p></div>
+        <div class="filters">
+          <select class="select" id="fMod"><option value="">Todos los módulos</option></select>
+          <select class="select" id="fTipo"><option value="">Todos los tipos</option></select>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead id="thead"></thead>
+          <tbody id="tbody"><tr><td class="msg"><i class="fas fa-spinner fa-spin"></i> Cargando…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="toast" id="toast"><i class="fas fa-circle-check"></i><span id="toastMsg"></span></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const fmt = d => d ? d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+const fechaHoy = () => new Date().toLocaleDateString('es-MX', { day: '2-digit', month: 'long', year: 'numeric' });
+const marcaModelo = a => [a.marca, a.modelo].filter(Boolean).join(' ') || '—';
+const cuenta = (lista, f) => lista.filter(f).length;
+const porTexto = (x, y) => String(x).localeCompare(String(y), 'es');
+
+let activos = [];
+let state = { rep: 'modulo', mod: '', tipo: '' };
+let ultimo = null;   // último reporte mostrado (para exportar)
+
+function toast(msg, err = false) {
+  $('#toastMsg').textContent = msg;
+  $('#toast i').className = err ? 'fas fa-circle-exclamation' : 'fas fa-circle-check';
+  $('#toast').classList.toggle('err', err);
+  $('#toast').classList.add('show');
+  setTimeout(() => $('#toast').classList.remove('show'), 3200);
+}
+
+function agrupar(lista, clave) {
+  const g = new Map();
+  lista.forEach(a => { const k = clave(a); if (!g.has(k)) g.set(k, []); g.get(k).push(a); });
+  return [...g.entries()].sort((x, y) => porTexto(x[0], y[0]));
+}
+
+/* ============ DEFINICIÓN DE REPORTES ============ */
+const REPORTES = {
+  modulo: {
+    titulo: 'Equipos por módulo',
+    desc: 'Cantidad de equipos de cada módulo de atención ciudadana, por estado y situación de resguardo.',
+    cols: ['Módulo', 'Municipio', 'Total', 'Operativos', 'Mantenimiento', 'Baja', 'Con resguardo', 'Sin resguardo'],
+    num: [2, 3, 4, 5, 6, 7], total: true,
+    filas: l => agrupar(l, a => a.modulo).map(([k, g]) => [
+      k, g[0].municipio, g.length,
+      cuenta(g, a => a.estado === 'Operativo'), cuenta(g, a => a.estado === 'Mantenimiento'), cuenta(g, a => a.estado === 'Baja'),
+      cuenta(g, a => a.conRes), cuenta(g, a => !a.conRes && a.estado !== 'Baja')
+    ])
+  },
+  tipo: {
+    titulo: 'Equipos por tipo',
+    desc: 'Distribución del equipo tecnológico por tipo y estado.',
+    cols: ['Tipo de equipo', 'Total', 'Operativos', 'Mantenimiento', 'Baja', 'Sin resguardo'],
+    num: [1, 2, 3, 4, 5], total: true,
+    filas: l => agrupar(l, a => a.tipo).map(([k, g]) => [
+      k, g.length,
+      cuenta(g, a => a.estado === 'Operativo'), cuenta(g, a => a.estado === 'Mantenimiento'), cuenta(g, a => a.estado === 'Baja'),
+      cuenta(g, a => !a.conRes && a.estado !== 'Baja')
+    ])
+  },
+  sinres: {
+    titulo: 'Equipos sin resguardo firmado',
+    desc: 'Equipos en uso (no dados de baja) que aún no cuentan con un resguardo vigente.',
+    cols: ['Folio', 'Tipo', 'Marca y modelo', 'No. de serie', 'Módulo', 'Responsable'],
+    mono: [0, 3],
+    filas: l => l.filter(a => !a.conRes && a.estado !== 'Baja')
+      .sort((x, y) => porTexto(x.folio, y.folio))
+      .map(a => [a.folio, a.tipo, marcaModelo(a), a.serie, a.modulo, a.resp])
+  },
+  resp: {
+    titulo: 'Equipos por responsable',
+    desc: 'Equipos en uso asignados a cada responsable y estado de su resguardo.',
+    cols: ['Responsable', 'Folio', 'Tipo', 'Marca y modelo', 'No. de serie', 'Módulo', 'Resguardo'],
+    mono: [1, 4],
+    filas: l => l.filter(a => a.estado !== 'Baja')
+      .sort((x, y) => porTexto(x.resp, y.resp) || porTexto(x.folio, y.folio))
+      .map(a => [a.resp, a.folio, a.tipo, marcaModelo(a), a.serie, a.modulo, a.conRes ? 'Firmado' : 'Pendiente'])
+  },
+  estado: {
+    titulo: 'Equipos en mantenimiento o baja',
+    desc: 'Equipos que no están operativos, para seguimiento de reparaciones y bajas.',
+    cols: ['Folio', 'Tipo', 'Marca y modelo', 'No. de serie', 'Módulo', 'Estado', 'Fecha de alta'],
+    mono: [0, 3],
+    filas: l => l.filter(a => a.estado !== 'Operativo')
+      .sort((x, y) => porTexto(x.estado, y.estado) || porTexto(x.folio, y.folio))
+      .map(a => [a.folio, a.tipo, marcaModelo(a), a.serie, a.modulo, a.estado, fmt(a.alta)])
+  }
+};
+
+/* ============ CARGA ============ */
+async function cargar() {
+  try {
+    const filas = await fetchAll('v_inventario', '*', 'id');
+    activos = filas.map(r => ({
+      folio: r.folio, tipo: r.tipo, marca: r.marca || '', modelo: r.modelo || '', serie: r.num_serie,
+      modulo: r.modulo || 'Sin módulo', municipio: r.municipio || '—', resp: r.responsable || 'Sin responsable',
+      estado: r.estado, conRes: !!r.con_resguardo, alta: r.fecha_alta ? new Date(r.fecha_alta + 'T00:00:00') : null
+    }));
+    const unicos = k => [...new Set(activos.map(a => a[k]))].sort(porTexto);
+    $('#fMod').innerHTML = '<option value="">Todos los módulos</option>' + unicos('modulo').map(x => `<option>${esc(x)}</option>`).join('');
+    $('#fTipo').innerHTML = '<option value="">Todos los tipos</option>' + unicos('tipo').map(x => `<option>${esc(x)}</option>`).join('');
+    render();
+  } catch (err) {
+    console.error(err);
+    $('#tbody').innerHTML = `<tr><td class="msg" style="color:var(--danger)">No se pudo cargar la información: ${esc(err.message)}</td></tr>`;
+  }
+}
+
+/* ============ RENDER ============ */
+function render() {
+  const r = REPORTES[state.rep];
+  const lista = activos.filter(a => (!state.mod || a.modulo === state.mod) && (!state.tipo || a.tipo === state.tipo));
+  const filas = r.filas(lista);
+  const num = r.num || [], mono = r.mono || [];
+
+  let total = null;
+  if (r.total && filas.length) {
+    total = r.cols.map((c, i) => i === 0 ? 'Total' : num.includes(i) ? filas.reduce((s, f) => s + f[i], 0) : '');
+  }
+  ultimo = { r, filas, total };
+
+  // Indicadores
+  const enUso = lista.filter(a => a.estado !== 'Baja');
+  const conRes = cuenta(enUso, a => a.conRes);
+  $('#kTotal').textContent = lista.length;
+  $('#kOk').textContent = cuenta(lista, a => a.estado === 'Operativo');
+  $('#kSin').textContent = enUso.length - conRes;
+  $('#kPct').textContent = enUso.length ? Math.round(conRes / enUso.length * 100) + '%' : '0%';
+
+  // Encabezados
+  $('#rTitulo').textContent = r.titulo;
+  $('#rDesc').textContent = r.desc;
+  const filtros = [state.mod && 'Módulo: ' + state.mod, state.tipo && 'Tipo: ' + state.tipo].filter(Boolean).join(' · ');
+  $('#pInfo').textContent = `${r.titulo} · ${filtros || 'Todos los módulos y tipos'} · Generado el ${fechaHoy()}`;
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.rep === state.rep));
+
+  // Tabla
+  $('#thead').innerHTML = '<tr>' + r.cols.map((c, i) => `<th class="${num.includes(i) ? 'n' : ''}">${esc(c)}</th>`).join('') + '</tr>';
+  const celda = (v, i) => `<td class="${num.includes(i) ? 'n' : ''} ${mono.includes(i) ? 'mono' : ''}">${esc(v)}</td>`;
+
+  if (!activos.length) {
+    $('#tbody').innerHTML = `<tr><td colspan="${r.cols.length}" class="msg">Aún no hay equipos registrados en el inventario.</td></tr>`;
+  } else if (!filas.length) {
+    $('#tbody').innerHTML = `<tr><td colspan="${r.cols.length}" class="msg"><i class="fas fa-circle-check" style="color:var(--ok)"></i> No hay equipos que cumplan este reporte.</td></tr>`;
+  } else {
+    $('#tbody').innerHTML = filas.map(f => '<tr>' + f.map(celda).join('') + '</tr>').join('') +
+      (total ? '<tr class="total">' + total.map(celda).join('') + '</tr>' : '');
+  }
+}
+
+/* ============ EXPORTAR ============ */
+$('#btnCsv').addEventListener('click', () => {
+  if (!ultimo || !ultimo.filas.length) return toast('No hay datos para exportar', true);
+  const datos = [ultimo.r.cols, ...ultimo.filas, ...(ultimo.total ? [ultimo.total] : [])];
+  const csv = '\uFEFF' + datos.map(f => f.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  link.download = `reporte_${state.rep}_${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+  toast('Reporte exportado');
+});
+$('#btnPrint').addEventListener('click', () => window.print());
+
+/* ============ EVENTOS ============ */
+$('#tabs').addEventListener('click', e => { const b = e.target.closest('button[data-rep]'); if (b) { state.rep = b.dataset.rep; render(); } });
+$('#fMod').addEventListener('change', e => { state.mod = e.target.value; render(); });
+$('#fTipo').addEventListener('change', e => { state.tipo = e.target.value; render(); });
+$('#menuBtn').addEventListener('click', () => $('#sidebar').classList.toggle('open'));
+
+(async function init() {
+  const perfil = await iniciarPagina();
+  if (!perfil) return;
+  await cargar();
+})();
+</script>
+</body>
+</html>

@@ -10,15 +10,15 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js"></script>
 <style>
-:root{--primary:#B0124E;--primary-dark:#7A0C36;--primary-light:#E8417F;--ink:#14111A;--muted:#6B6475;--line:#ECE8F0;--bg:#F7F5FA;--ok:#16A34A;--warn:#D97706;--danger:#DC2626;--info:#2563EB;--sidebar:260px}
+:root{--primary:#454248;--primary-dark:#2E2C30;--primary-light:#828A91;--ink:#1C1B1F;--muted:#5F5C63;--line:#E6E1DC;--bg:#F5F3F1;--ok:#16A34A;--warn:#D97706;--danger:#DC2626;--info:#2563EB;--sidebar:260px}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink)}
 a{text-decoration:none;color:inherit}button{font:inherit;cursor:pointer}
 
-.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);z-index:40;background:radial-gradient(140% 80% at 0% 0%,#C2185B 0%,#7A0C36 50%,#2A0614 100%);color:#fff;display:flex;flex-direction:column;padding:22px 16px;transition:transform .3s}
-.sb-brand{display:flex;align-items:center;gap:12px;padding:6px 8px 22px;border-bottom:1px solid rgba(255,255,255,.12)}
-.sb-mark{width:56px;height:56px;display:grid;place-items:center;flex-shrink:0}
-.sb-mark img{width:100%;height:100%;object-fit:contain}
+.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);z-index:40;background:radial-gradient(140% 80% at 0% 0%,#5A575E 0%,#2E2C30 50%,#1C1B1F 100%);color:#fff;display:flex;flex-direction:column;padding:22px 16px;transition:transform .3s}
+.sb-brand{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:6px 8px 22px;border-bottom:1px solid rgba(255,255,255,.12)}
+.sb-mark{width:150px;height:94px;flex-shrink:0}
+.sb-mark img{width:100%;height:100%;object-fit:cover;border-radius:10px}
 .sb-brand strong{display:block;font-size:14px}.sb-brand span{font-size:11.5px;opacity:.7}
 .sb-section{font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;opacity:.5;margin:22px 12px 8px}
 .sb-link{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-size:13.5px;font-weight:500;color:rgba(255,255,255,.78);transition:all .2s;margin-bottom:2px}
@@ -27,7 +27,7 @@ a{text-decoration:none;color:inherit}button{font:inherit;cursor:pointer}
 .sb-link.active{background:rgba(255,255,255,.16);color:#fff;font-weight:600;box-shadow:inset 3px 0 0 #fff}
 .sb-link .count{margin-left:auto;font-size:11px;background:rgba(255,255,255,.18);padding:2px 8px;border-radius:999px}
 .sb-user{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
-.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#FFD1E3,#fff);color:var(--primary);display:grid;place-items:center;font-weight:800;font-size:13px;flex-shrink:0}
+.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#C5A989,#fff);color:var(--primary);display:grid;place-items:center;font-weight:800;font-size:13px;flex-shrink:0}
 .sb-user strong{display:block;font-size:13px}.sb-user span{font-size:11px;opacity:.7}.sb-user a{margin-left:auto;opacity:.7}
 
 .main{margin-left:var(--sidebar);min-height:100vh}
@@ -37,7 +37,7 @@ a{text-decoration:none;color:inherit}button{font:inherit;cursor:pointer}
 .page-title p{font-size:12.5px;color:var(--muted)}
 .content{padding:28px 32px 40px}
 
-.welcome{position:relative;overflow:hidden;border-radius:20px;padding:26px 30px;margin-bottom:24px;color:#fff;background:linear-gradient(120deg,#B0124E 0%,#7A0C36 60%,#3B0A1F 100%);display:flex;align-items:center;justify-content:space-between;gap:20px}
+.welcome{position:relative;overflow:hidden;border-radius:20px;padding:26px 30px;margin-bottom:24px;color:#fff;background:linear-gradient(120deg,#454248 0%,#2E2C30 60%,#3B0A1F 100%);display:flex;align-items:center;justify-content:space-between;gap:20px}
 .welcome::after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.08)}
 .welcome h2{font-size:22px;font-weight:800;margin-bottom:6px}
 .welcome p{font-size:13.5px;opacity:.8}
@@ -55,7 +55,7 @@ a{text-decoration:none;color:inherit}button{font:inherit;cursor:pointer}
 .tag{font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:999px;background:#F1F0F4;color:var(--muted)}
 .kpi b{font-size:30px;font-weight:800;letter-spacing:-1px;display:block}
 .kpi span{font-size:13px;color:var(--muted)}
-.c1{background:#FDECF3;color:var(--primary)}.c2{background:#EEF2FF;color:var(--info)}.c3{background:#ECFDF3;color:var(--ok)}.c4{background:#FFF7ED;color:var(--warn)}
+.c1{background:#F3EDE6;color:var(--primary)}.c2{background:#EEF2FF;color:var(--info)}.c3{background:#ECFDF3;color:var(--ok)}.c4{background:#FFF7ED;color:var(--warn)}
 
 .grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:24px}
 .panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px}
@@ -78,7 +78,7 @@ td{padding:13px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
 .asset{display:flex;align-items:center;gap:12px}
 .asset-ico{width:36px;height:36px;border-radius:10px;background:var(--bg);display:grid;place-items:center;color:var(--primary)}
 .asset strong{display:block;font-size:13.5px}.asset small{color:var(--muted);font-size:12px}
-.mono{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;color:#4B4556}
+.mono{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;color:#454248}
 .pill{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;font-size:12px;font-weight:600}
 .pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 .p-ok{background:#ECFDF3;color:var(--ok)}.p-warn{background:#FFF7ED;color:var(--warn)}.p-bad{background:#FEF2F2;color:var(--danger)}
@@ -112,10 +112,8 @@ td{padding:13px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
   <a href="resguardos.html" class="sb-link"><i class="fas fa-file-signature"></i>Resguardos</a>
   <a href="qr.html" class="sb-link"><i class="fas fa-qrcode"></i>Códigos QR</a>
   <a href="historial.html" class="sb-link"><i class="fas fa-clock-rotate-left"></i>Historial</a>
-  <a href="#" class="sb-link" onclick="alert('Módulo de reportes en desarrollo (Sprint 4).');return false;"><i class="fas fa-chart-pie"></i>Reportes<span class="count">Pronto</span></a>
-  <div class="sb-section">Sistema</div>
-  <a href="#" class="sb-link" onclick="alert('Los usuarios se administran desde Supabase. Pantalla en desarrollo.');return false;"><i class="fas fa-user-shield"></i>Usuarios y roles<span class="count">Pronto</span></a>
-  <a href="#" class="sb-link" onclick="alert('Configuración en desarrollo.');return false;"><i class="fas fa-gear"></i>Configuración<span class="count">Pronto</span></a>
+  <a href="reportes.html" class="sb-link"><i class="fas fa-chart-pie"></i>Reportes</a>  <div class="sb-section">Sistema</div>
+  <a href="usuarios.html" class="sb-link"><i class="fas fa-user-shield"></i>Usuarios y roles</a>  <a href="#" class="sb-link" onclick="alert('Configuración en desarrollo.');return false;"><i class="fas fa-gear"></i>Configuración<span class="count">Pronto</span></a>
   <div class="sb-user">
     <div class="avatar">—</div>
     <div><strong>Cargando…</strong><span>Rol: —</span></div>
@@ -238,7 +236,7 @@ async function cargar() {
     $('#eOk').textContent = est.Operativo; $('#eWarn').textContent = est.Mantenimiento; $('#eBad').textContent = est.Baja;
 
     Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
-    Chart.defaults.color = '#6B6475';
+    Chart.defaults.color = '#5F5C63';
 
     if (!total) {
       vacioGrafica('#boxTipos', 'Aún no hay activos registrados');
@@ -250,7 +248,7 @@ async function cargar() {
       const tipos = Object.entries(porTipo).sort((a, b) => b[1] - a[1]);
       new Chart($('#chartTipos'), {
         type: 'bar',
-        data: { labels: tipos.map(t => t[0]), datasets: [{ label: 'Activos', data: tipos.map(t => t[1]), backgroundColor: '#B0124E', borderRadius: 8, maxBarThickness: 38 }] },
+        data: { labels: tipos.map(t => t[0]), datasets: [{ label: 'Activos', data: tipos.map(t => t[1]), backgroundColor: '#454248', borderRadius: 8, maxBarThickness: 38 }] },
         options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } },
           scales: { x: { grid: { display: false } }, y: { beginAtZero: true, ticks: { precision: 0 }, grid: { color: '#F1EEF4' }, border: { display: false } } } }
       });

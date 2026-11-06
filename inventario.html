@@ -10,16 +10,16 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js"></script>
 <style>
-:root{--primary:#B0124E;--primary-dark:#7A0C36;--primary-light:#E8417F;--ink:#14111A;--muted:#6B6475;--line:#ECE8F0;--bg:#F7F5FA;--ok:#16A34A;--warn:#D97706;--danger:#DC2626;--info:#2563EB;--sidebar:260px}
+:root{--primary:#454248;--primary-dark:#2E2C30;--primary-light:#828A91;--ink:#1C1B1F;--muted:#5F5C63;--line:#E6E1DC;--bg:#F5F3F1;--ok:#16A34A;--warn:#D97706;--danger:#DC2626;--info:#2563EB;--sidebar:260px}
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink)}
 a{text-decoration:none;color:inherit}button{font:inherit;cursor:pointer}
 
 /* Sidebar */
-.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);z-index:40;background:radial-gradient(140% 80% at 0% 0%,#C2185B 0%,#7A0C36 50%,#2A0614 100%);color:#fff;display:flex;flex-direction:column;padding:22px 16px;transition:transform .3s}
-.sb-brand{display:flex;align-items:center;gap:12px;padding:6px 8px 22px;border-bottom:1px solid rgba(255,255,255,.12)}
-.sb-mark{width:56px;height:56px;display:grid;place-items:center;flex-shrink:0}
-.sb-mark img{width:100%;height:100%;object-fit:contain}
+.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);z-index:40;background:radial-gradient(140% 80% at 0% 0%,#5A575E 0%,#2E2C30 50%,#1C1B1F 100%);color:#fff;display:flex;flex-direction:column;padding:22px 16px;transition:transform .3s}
+.sb-brand{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:6px 8px 22px;border-bottom:1px solid rgba(255,255,255,.12)}
+.sb-mark{width:150px;height:94px;flex-shrink:0}
+.sb-mark img{width:100%;height:100%;object-fit:cover;border-radius:10px}
 .sb-brand strong{display:block;font-size:14px}.sb-brand span{font-size:11.5px;opacity:.7}
 .sb-section{font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;opacity:.5;margin:22px 12px 8px}
 .sb-link{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-size:13.5px;font-weight:500;color:rgba(255,255,255,.78);transition:all .2s;margin-bottom:2px}
@@ -28,7 +28,7 @@ a{text-decoration:none;color:inherit}button{font:inherit;cursor:pointer}
 .sb-link.active{background:rgba(255,255,255,.16);color:#fff;font-weight:600;box-shadow:inset 3px 0 0 #fff}
 .sb-link .count{margin-left:auto;font-size:11px;background:rgba(255,255,255,.18);padding:2px 8px;border-radius:999px}
 .sb-user{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
-.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#FFD1E3,#fff);color:var(--primary);display:grid;place-items:center;font-weight:800;font-size:13px;flex-shrink:0}
+.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#C5A989,#fff);color:var(--primary);display:grid;place-items:center;font-weight:800;font-size:13px;flex-shrink:0}
 .sb-user strong{display:block;font-size:13px}.sb-user span{font-size:11px;opacity:.7}.sb-user a{margin-left:auto;opacity:.7}
 
 /* Main */
@@ -40,7 +40,7 @@ a{text-decoration:none;color:inherit}button{font:inherit;cursor:pointer}
 .top-actions{margin-left:auto;display:flex;gap:10px}
 .content{padding:28px 32px 40px}
 .btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:11px;padding:11px 18px;font-size:13.5px;font-weight:700;transition:all .2s}
-.btn-primary{background:linear-gradient(135deg,var(--primary-light),var(--primary));color:#fff;box-shadow:0 8px 18px -8px rgba(176,18,78,.6)}
+.btn-primary{background:linear-gradient(135deg,var(--primary-light),var(--primary));color:#fff;box-shadow:0 8px 18px -8px rgba(69,66,72,.6)}
 .btn-primary:hover{transform:translateY(-1px)}
 .btn-primary:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .btn-light{background:#fff;color:var(--ink);border:1px solid var(--line)}
@@ -51,22 +51,22 @@ a{text-decoration:none;color:inherit}button{font:inherit;cursor:pointer}
 /* Resumen */
 .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
 .sum{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .2s}
-.sum:hover,.sum.on{border-color:var(--primary);box-shadow:0 0 0 4px rgba(176,18,78,.07)}
+.sum:hover,.sum.on{border-color:var(--primary);box-shadow:0 0 0 4px rgba(69,66,72,.07)}
 .sum i{width:40px;height:40px;border-radius:11px;display:grid;place-items:center}
 .sum b{font-size:20px;font-weight:800;display:block}.sum span{font-size:12px;color:var(--muted)}
-.c1{background:#FDECF3;color:var(--primary)}.c2{background:#ECFDF3;color:var(--ok)}.c3{background:#FFF7ED;color:var(--warn)}.c4{background:#FEF2F2;color:var(--danger)}
+.c1{background:#F3EDE6;color:var(--primary)}.c2{background:#ECFDF3;color:var(--ok)}.c3{background:#FFF7ED;color:var(--warn)}.c4{background:#FEF2F2;color:var(--danger)}
 
 /* Filtros y tabla */
 .panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px}
 .filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:10px;margin-bottom:16px}
 .search{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:11px;padding:0 14px}
 .search:focus-within{border-color:var(--primary)}
-.search i{color:#A39CAD;font-size:13px}
+.search i{color:#9A979C;font-size:13px}
 .search input{border:0;outline:0;padding:11px 0;width:100%;font:inherit;font-size:13.5px}
 .select{border:1.5px solid var(--line);border-radius:11px;padding:10px 12px;font:inherit;font-size:13px;background:#fff;outline:0;color:var(--ink)}
 .select:focus{border-color:var(--primary)}
 .chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;min-height:4px}
-.chip{display:inline-flex;align-items:center;gap:8px;background:#FDECF3;color:var(--primary);padding:6px 12px;border-radius:999px;font-size:12px;font-weight:600}
+.chip{display:inline-flex;align-items:center;gap:8px;background:#F3EDE6;color:var(--primary);padding:6px 12px;border-radius:999px;font-size:12px;font-weight:600}
 .chip button{border:0;background:none;color:inherit}
 .table-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13.5px}
@@ -79,7 +79,7 @@ tbody tr:hover td{background:#FCFBFD}
 .asset{display:flex;align-items:center;gap:12px}
 .asset-ico{width:36px;height:36px;border-radius:10px;background:var(--bg);display:grid;place-items:center;color:var(--primary)}
 .asset strong{display:block;font-size:13.5px}.asset small{color:var(--muted);font-size:12px}
-.mono{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;color:#4B4556}
+.mono{font-family:ui-monospace,Consolas,monospace;font-size:12.5px;color:#454248}
 .pill{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;font-size:12px;font-weight:600}
 .pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
 .p-ok{background:#ECFDF3;color:var(--ok)}.p-warn{background:#FFF7ED;color:var(--warn)}.p-bad{background:#FEF2F2;color:var(--danger)}
@@ -97,7 +97,7 @@ tbody tr:hover td{background:#FCFBFD}
 /* Panel de detalle */
 .drawer-bg{position:fixed;inset:0;background:rgba(20,17,26,.4);backdrop-filter:blur(3px);z-index:60;opacity:0;pointer-events:none;transition:opacity .25s}
 .drawer-bg.show{opacity:1;pointer-events:auto}
-.drawer{position:fixed;top:0;right:0;height:100vh;width:460px;max-width:100%;background:#fff;z-index:61;transform:translateX(100%);transition:transform .35s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
+.drawer{position:fixed;top:0;right:0;height:100vh;height:100dvh;width:460px;max-width:100%;background:#fff;z-index:61;transform:translateX(100%);transition:transform .35s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column}
 .drawer.show{transform:none}
 .d-head{padding:22px 24px;border-bottom:1px solid var(--line);display:flex;gap:14px;align-items:flex-start}
 .d-head .asset-ico{width:48px;height:48px;font-size:18px}
@@ -116,7 +116,7 @@ tbody tr:hover td{background:#FCFBFD}
 .timeline::before{content:"";position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--line)}
 .tl{position:relative;margin-bottom:18px}
 .tl::before{content:"";position:absolute;left:-21px;top:4px;width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid var(--primary)}
-.tl b{font-size:13px;display:block}.tl small{font-size:11.5px;color:#A39CAD}
+.tl b{font-size:13px;display:block}.tl small{font-size:11.5px;color:#9A979C}
 .qr-center{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
 #dQR{padding:16px;border:1px dashed var(--line);border-radius:16px}
 .d-foot{padding:16px 24px;border-top:1px solid var(--line);display:flex;gap:10px}
@@ -135,8 +135,18 @@ tbody tr:hover td{background:#FCFBFD}
 .f label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px}
 .f label .req{color:var(--danger)}
 .f input,.f select,.f textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;font:inherit;font-size:13.5px;outline:0;background:#fff}
+.f select:disabled{background:var(--bg);color:#9A979C}
 .f textarea{resize:vertical;min-height:70px}
-.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(176,18,78,.08)}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(69,66,72,.08)}
+.with-add{display:flex;gap:6px}
+.with-add select{flex:1;min-width:0}
+.mini-btn{flex-shrink:0;width:42px;border:1.5px solid var(--line);border-radius:10px;background:#fff;color:var(--primary);font-size:13px}
+.mini-btn:hover{border-color:var(--primary)}
+.mini-btn.ok{background:var(--primary);border-color:var(--primary);color:#fff}
+.mini-btn:disabled{opacity:.4;cursor:not-allowed}
+.inline-add{display:none;gap:6px;margin-top:6px}
+.inline-add.show{display:flex}
+.inline-add input{flex:1;min-width:0}
 .form-error{display:none;margin-top:14px;padding:10px 12px;border-radius:10px;background:#FEF2F2;color:var(--danger);font-size:13px}
 .form-error.show{display:block}
 .modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid var(--line)}
@@ -166,10 +176,8 @@ tbody tr:hover td{background:#FCFBFD}
   <a href="resguardos.html" class="sb-link"><i class="fas fa-file-signature"></i>Resguardos</a>
   <a href="qr.html" class="sb-link"><i class="fas fa-qrcode"></i>Códigos QR</a>
   <a href="historial.html" class="sb-link"><i class="fas fa-clock-rotate-left"></i>Historial</a>
-  <a href="#" class="sb-link" onclick="alert('Módulo de reportes en desarrollo (Sprint 4).');return false;"><i class="fas fa-chart-pie"></i>Reportes<span class="count">Pronto</span></a>
-  <div class="sb-section">Sistema</div>
-  <a href="#" class="sb-link" onclick="alert('Los usuarios se administran desde Supabase. Pantalla en desarrollo.');return false;"><i class="fas fa-user-shield"></i>Usuarios y roles<span class="count">Pronto</span></a>
-  <a href="#" class="sb-link" onclick="alert('Configuración en desarrollo.');return false;"><i class="fas fa-gear"></i>Configuración<span class="count">Pronto</span></a>
+  <a href="reportes.html" class="sb-link"><i class="fas fa-chart-pie"></i>Reportes</a>  <div class="sb-section">Sistema</div>
+  <a href="usuarios.html" class="sb-link"><i class="fas fa-user-shield"></i>Usuarios y roles</a>  <a href="#" class="sb-link" onclick="alert('Configuración en desarrollo.');return false;"><i class="fas fa-gear"></i>Configuración<span class="count">Pronto</span></a>
   <div class="sb-user">
     <div class="avatar">—</div>
     <div><strong>Cargando…</strong><span>Rol: —</span></div>
@@ -272,13 +280,36 @@ tbody tr:hover td{background:#FCFBFD}
         <div class="form-grid">
           <div class="f"><label>Tipo de equipo <span class="req">*</span></label><select id="aTipo"></select></div>
           <div class="f"><label>Número de serie <span class="req">*</span></label><input id="aSerie" placeholder="Ej. 5CD1234XYZ"></div>
-          <div class="f"><label>Marca</label><input id="aMarca" placeholder="Ej. HP"></div>
-          <div class="f"><label>Modelo</label><input id="aModelo" placeholder="Ej. ProDesk 400 G7"></div>
+
+          <div class="f">
+            <label>Marca</label>
+            <div class="with-add">
+              <select id="aMarca"></select>
+              <button type="button" class="mini-btn" id="addMarcaBtn" title="Agregar marca nueva"><i class="fas fa-plus"></i></button>
+            </div>
+            <div class="inline-add" id="newMarcaBox">
+              <input id="newMarca" placeholder="Nombre de la marca" maxlength="60">
+              <button type="button" class="mini-btn ok" id="saveMarca" title="Guardar marca"><i class="fas fa-check"></i></button>
+              <button type="button" class="mini-btn" data-cancel="newMarcaBox" title="Cancelar"><i class="fas fa-xmark"></i></button>
+            </div>
+          </div>
+
+          <div class="f">
+            <label>Modelo</label>
+            <div class="with-add">
+              <select id="aModelo"></select>
+              <button type="button" class="mini-btn" id="addModeloBtn" title="Agregar modelo nuevo"><i class="fas fa-plus"></i></button>
+            </div>
+            <div class="inline-add" id="newModeloBox">
+              <input id="newModelo" placeholder="Nombre del modelo" maxlength="80">
+              <button type="button" class="mini-btn ok" id="saveModelo" title="Guardar modelo"><i class="fas fa-check"></i></button>
+              <button type="button" class="mini-btn" data-cancel="newModeloBox" title="Cancelar"><i class="fas fa-xmark"></i></button>
+            </div>
+          </div>
+
           <div class="f"><label>Módulo <span class="req">*</span></label><select id="aModulo"></select></div>
           <div class="f"><label>Responsable</label><select id="aResp"></select></div>
-          <div class="f"><label>Estado</label>
-            <select id="aEstado"><option>Operativo</option><option>Mantenimiento</option><option>Baja</option></select>
-          </div>
+          <div class="f"><label>Estado <span class="req">*</span></label><select id="aEstado"></select></div>
           <div class="f"><label>Fecha de alta</label><input type="date" id="aFecha"></div>
           <div class="f full"><label>Observaciones</label><textarea id="aObs" placeholder="Opcional"></textarea></div>
         </div>
@@ -300,6 +331,8 @@ const $ = s => document.querySelector(s);
 const pill = e => e === 'Operativo' ? 'p-ok' : e === 'Mantenimiento' ? 'p-warn' : 'p-bad';
 const fmt = d => d ? d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
 const hoy = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); };
+const limpiarTexto = s => s.trim().replace(/\s+/g, ' ');
+const porNombre = (a, b) => a.nombre.localeCompare(b.nombre, 'es');
 
 function toast(msg, esError = false) {
   $('#toastMsg').textContent = msg;
@@ -311,19 +344,25 @@ function toast(msg, esError = false) {
 
 function mensajeError(e) {
   const texto = `${e.message || ''} ${e.details || ''}`;
-  if (e.code === '23505') return texto.includes('num_serie')
-    ? 'Ya existe un activo con ese número de serie.'
-    : 'Registro duplicado: ' + (e.details || e.message);
+  if (e.code === '23505') {
+    if (texto.includes('num_serie')) return 'Ya existe un activo con ese número de serie.';
+    if (texto.includes('modelos_')) return 'Ese modelo ya existe para esta marca.';
+    if (texto.includes('marcas_')) return 'Esa marca ya existe.';
+    return 'Registro duplicado: ' + (e.details || e.message);
+  }
   if (e.code === '42501') return 'Sin permiso para guardar en la base de datos: ' + e.message;
   if (e.code === '23502') return 'Falta un dato obligatorio: ' + e.message;
+  if (e.code === '23503') return 'Uno de los datos seleccionados ya no existe en el catálogo. Recarga la página.';
   return 'No se pudo guardar: ' + (e.message || 'error desconocido');
 }
 
 /* ============ ESTADO ============ */
-let perfil = null, activos = [], cat = { tipos: [], modulos: [], resps: [] };
+let perfil = null, activos = [];
+let cat = { tipos: [], modulos: [], resps: [], marcas: [], modelos: [], estados: [] };
 let actual = null, editId = null;
 let state = { q: '', tipo: '', mod: '', res: '', est: '', sort: 'folio', dir: -1, page: 1, per: 15 };
 const puedeEditar = () => perfil && perfil.rol !== 'auditor';
+const idEstado = nombre => (cat.estados.find(e => e.nombre === nombre) || {}).id;
 
 function mapear(r) {
   return {
@@ -337,20 +376,48 @@ function mapear(r) {
 
 /* ============ CARGA DE DATOS ============ */
 async function cargarCatalogos() {
-  const [t, m, r] = await Promise.all([
+  const [t, m, r, mk, mo, es] = await Promise.all([
     db.from('tipos_equipo').select('id, nombre').order('nombre'),
     db.from('modulos').select('id, nombre').order('nombre'),
-    db.from('responsables').select('id, nombre').eq('activo', true).order('nombre')
+    db.from('responsables').select('id, nombre').eq('activo', true).order('nombre'),
+    db.from('marcas').select('id, nombre').order('nombre'),
+    db.from('modelos').select('id, nombre, marca_id').order('nombre'),
+    db.from('estados_activo').select('id, nombre').order('id')
   ]);
-  const err = t.error || m.error || r.error;
+  const err = t.error || m.error || r.error || mk.error || mo.error || es.error;
   if (err) throw err;
-  cat = { tipos: t.data, modulos: m.data, resps: r.data };
+  cat = { tipos: t.data, modulos: m.data, resps: r.data, marcas: mk.data, modelos: mo.data, estados: es.data };
 
   $('#fTipo').innerHTML = '<option value="">Tipo de equipo</option>' + cat.tipos.map(x => `<option>${esc(x.nombre)}</option>`).join('');
   $('#fMod').innerHTML  = '<option value="">Módulo</option>' + cat.modulos.map(x => `<option>${esc(x.nombre)}</option>`).join('');
   $('#aTipo').innerHTML   = '<option value="">Selecciona…</option>' + cat.tipos.map(x => `<option value="${x.id}">${esc(x.nombre)}</option>`).join('');
   $('#aModulo').innerHTML = '<option value="">Selecciona…</option>' + cat.modulos.map(x => `<option value="${x.id}">${esc(x.nombre)}</option>`).join('');
   $('#aResp').innerHTML   = '<option value="">Sin asignar</option>' + cat.resps.map(x => `<option value="${x.id}">${esc(x.nombre)}</option>`).join('');
+  $('#aEstado').innerHTML = cat.estados.map(x => `<option value="${x.id}">${esc(x.nombre)}</option>`).join('');
+  llenarMarcas('');
+  llenarModelos('');
+}
+
+function llenarMarcas(seleccion) {
+  $('#aMarca').innerHTML = '<option value="">Sin especificar</option>' +
+    cat.marcas.map(x => `<option value="${x.id}">${esc(x.nombre)}</option>`).join('');
+  $('#aMarca').value = seleccion ?? '';
+}
+
+function llenarModelos(marcaId, seleccion) {
+  const sel = $('#aModelo');
+  const hay = !!marcaId;
+  sel.disabled = !hay;
+  $('#addModeloBtn').disabled = !hay || !puedeEditar();
+  if (!hay) {
+    sel.innerHTML = '<option value="">Elige primero la marca</option>';
+    cerrarInline('newModeloBox');
+    return;
+  }
+  const lista = cat.modelos.filter(x => x.marca_id === +marcaId);
+  sel.innerHTML = '<option value="">' + (lista.length ? 'Selecciona…' : 'Sin modelos: agrega uno con +') + '</option>' +
+    lista.map(x => `<option value="${x.id}">${esc(x.nombre)}</option>`).join('');
+  sel.value = seleccion ?? '';
 }
 
 async function cargarDatos() {
@@ -487,7 +554,7 @@ function openDetail(dbId) {
   $('#dQR').innerHTML = '';
   try {
     const url = new URL('inventario.html?folio=' + encodeURIComponent(a.folio), location.href).href;
-    new QRCode($('#dQR'), { text: url, width: 180, height: 180, colorDark: '#14111A', correctLevel: QRCode.CorrectLevel.M });
+    new QRCode($('#dQR'), { text: url, width: 180, height: 180, colorDark: '#1C1B1F', correctLevel: QRCode.CorrectLevel.M });
   } catch (e) {
     console.error('QR:', e);
     $('#dQR').textContent = 'No se pudo generar el código QR';
@@ -519,31 +586,108 @@ async function cargarHistorial(dbId) {
     <div class="tl"><b>${esc(x.accion)}</b><small>${new Date(x.fecha).toLocaleString('es-MX')}</small></div>`).join('')}</div>`;
 }
 
+/* ============ ALTA RÁPIDA DE MARCAS Y MODELOS ============ */
+function abrirInline(boxId, inputId) {
+  $('#' + boxId).classList.add('show');
+  $('#' + inputId).value = '';
+  $('#' + inputId).focus();
+}
+function cerrarInline(boxId) { $('#' + boxId).classList.remove('show'); }
+
+document.querySelectorAll('[data-cancel]').forEach(b => b.addEventListener('click', () => cerrarInline(b.dataset.cancel)));
+$('#addMarcaBtn').addEventListener('click', () => abrirInline('newMarcaBox', 'newMarca'));
+$('#addModeloBtn').addEventListener('click', () => abrirInline('newModeloBox', 'newModelo'));
+$('#aMarca').addEventListener('change', e => { cerrarInline('newModeloBox'); llenarModelos(e.target.value); });
+
+// Enter dentro de las cajitas guarda la marca/modelo en lugar de enviar el formulario
+$('#newMarca').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); guardarMarca(); } });
+$('#newModelo').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); guardarModelo(); } });
+$('#saveMarca').addEventListener('click', guardarMarca);
+$('#saveModelo').addEventListener('click', guardarModelo);
+
+async function guardarMarca() {
+  const nombre = limpiarTexto($('#newMarca').value);
+  if (!nombre) return $('#newMarca').focus();
+
+  const existe = cat.marcas.find(x => x.nombre.toLowerCase() === nombre.toLowerCase());
+  if (existe) {
+    llenarMarcas(existe.id); llenarModelos(existe.id);
+    cerrarInline('newMarcaBox');
+    return toast(`La marca ${existe.nombre} ya existía y quedó seleccionada`);
+  }
+
+  $('#saveMarca').disabled = true;
+  const { data, error } = await db.from('marcas').insert({ nombre }).select('id, nombre').single();
+  $('#saveMarca').disabled = false;
+  if (error) { console.error(error); return toast(mensajeError(error), true); }
+
+  cat.marcas.push(data); cat.marcas.sort(porNombre);
+  llenarMarcas(data.id); llenarModelos(data.id);
+  cerrarInline('newMarcaBox');
+  toast(`Marca ${data.nombre} agregada`);
+  abrirInline('newModeloBox', 'newModelo');   // una marca nueva no tiene modelos: pedimos el primero
+}
+
+async function guardarModelo() {
+  const marca_id = +$('#aMarca').value;
+  if (!marca_id) return toast('Primero elige la marca', true);
+  const nombre = limpiarTexto($('#newModelo').value);
+  if (!nombre) return $('#newModelo').focus();
+
+  const existe = cat.modelos.find(x => x.marca_id === marca_id && x.nombre.toLowerCase() === nombre.toLowerCase());
+  if (existe) {
+    llenarModelos(marca_id, existe.id);
+    cerrarInline('newModeloBox');
+    return toast(`El modelo ${existe.nombre} ya existía y quedó seleccionado`);
+  }
+
+  $('#saveModelo').disabled = true;
+  const { data, error } = await db.from('modelos').insert({ marca_id, nombre }).select('id, nombre, marca_id').single();
+  $('#saveModelo').disabled = false;
+  if (error) { console.error(error); return toast(mensajeError(error), true); }
+
+  cat.modelos.push(data); cat.modelos.sort(porNombre);
+  llenarModelos(marca_id, data.id);
+  cerrarInline('newModeloBox');
+  toast(`Modelo ${data.nombre} agregado`);
+}
+
 /* ============ REGISTRAR / EDITAR ============ */
+function prepararFormulario() {
+  $('#addError').classList.remove('show');
+  cerrarInline('newMarcaBox');
+  cerrarInline('newModeloBox');
+  $('#addMarcaBtn').disabled = !puedeEditar();
+}
+
 function abrirRegistro() {
   editId = null;
   $('#mTitle').textContent = 'Registrar activo';
   $('#addForm').reset();
+  prepararFormulario();
+  llenarMarcas('');
+  llenarModelos('');
+  $('#aEstado').value = idEstado('Operativo') ?? '';
   $('#aFecha').value = hoy();
-  $('#addError').classList.remove('show');
   $('#mAdd').classList.add('show');
   setTimeout(() => $('#aTipo').focus(), 100);
 }
 
 async function abrirEdicion() {
   if (!actual) return;
-  const { data, error } = await db.from('activos').select('*').eq('id', actual.dbId).single();
+  const { data, error } = await db.from('activos').select('*, modelos(marca_id)').eq('id', actual.dbId).single();
   if (error) { console.error(error); return toast('No se pudo cargar el activo', true); }
   editId = data.id;
+  const marcaId = data.modelos ? data.modelos.marca_id : '';
   $('#mTitle').textContent = 'Editar activo ' + data.folio;
-  $('#addError').classList.remove('show');
+  prepararFormulario();
   $('#aTipo').value   = data.tipo_id ?? '';
   $('#aSerie').value  = data.num_serie ?? '';
-  $('#aMarca').value  = data.marca ?? '';
-  $('#aModelo').value = data.modelo ?? '';
+  llenarMarcas(marcaId);
+  llenarModelos(marcaId, data.modelo_id ?? '');
   $('#aModulo').value = data.modulo_id ?? '';
   $('#aResp').value   = data.responsable_id ?? '';
-  $('#aEstado').value = data.estado;
+  $('#aEstado').value = data.estado_id ?? '';
   $('#aFecha').value  = data.fecha_alta ?? '';
   $('#aObs').value    = data.observaciones ?? '';
   closeDetail();
@@ -560,24 +704,29 @@ $('#addForm').addEventListener('submit', async e => {
   e.preventDefault();
   const errBox = $('#addError');
   errBox.classList.remove('show');
+  const fallo = msg => { errBox.textContent = msg; errBox.classList.add('show'); };
 
   const tipo_id = $('#aTipo').value;
   const modulo_id = $('#aModulo').value;
+  const estado_id = $('#aEstado').value;
   const num_serie = $('#aSerie').value.trim().toUpperCase();
-  if (!tipo_id || !modulo_id || !num_serie) {
-    errBox.textContent = 'Completa los campos obligatorios: tipo de equipo, número de serie y módulo.';
-    errBox.classList.add('show');
-    return;
+  const marca_id = $('#aMarca').value;
+  const modelo_id = $('#aModelo').value;
+
+  if (!tipo_id || !modulo_id || !num_serie || !estado_id) {
+    return fallo('Completa los campos obligatorios: tipo de equipo, número de serie, módulo y estado.');
+  }
+  if (marca_id && !modelo_id) {
+    return fallo('Elegiste una marca: selecciona también el modelo (o agrégalo con el botón +).');
   }
 
   const datos = {
     tipo_id: +tipo_id,
     modulo_id: +modulo_id,
     num_serie,
-    marca: $('#aMarca').value.trim() || null,
-    modelo: $('#aModelo').value.trim() || null,
+    modelo_id: modelo_id ? +modelo_id : null,
     responsable_id: $('#aResp').value ? +$('#aResp').value : null,
-    estado: $('#aEstado').value,
+    estado_id: +estado_id,
     fecha_alta: $('#aFecha').value || null,
     observaciones: $('#aObs').value.trim() || null
   };
@@ -596,23 +745,21 @@ $('#addForm').addEventListener('submit', async e => {
 
   if (res.error) {
     console.error('Error al guardar:', res.error);
-    errBox.textContent = mensajeError(res.error);
-    errBox.classList.add('show');
-    return;
+    return fallo(mensajeError(res.error));
   }
 
   cerrarRegistro();
   editId = null;
   await cargarDatos();
-  const mod = new URLSearchParams(location.search).get('modulo');
-  if (mod) { state.mod = mod; $('#fMod').value = mod; render(); }
   toast(esEdicion ? `Activo ${res.data.folio} actualizado` : `Activo ${res.data.folio} registrado correctamente`);
 });
 
 /* ============ DAR DE BAJA ============ */
 $('#dBaja').addEventListener('click', async () => {
   if (!actual || !confirm(`¿Dar de baja el activo ${actual.folio}?`)) return;
-  const { error } = await db.from('activos').update({ estado: 'Baja' }).eq('id', actual.dbId);
+  const baja = idEstado('Baja');
+  if (!baja) return toast('No existe el estado "Baja" en el catálogo', true);
+  const { error } = await db.from('activos').update({ estado_id: baja }).eq('id', actual.dbId);
   if (error) { console.error(error); return toast(mensajeError(error), true); }
   closeDetail();
   await cargarDatos();

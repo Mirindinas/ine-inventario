@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Usuarios y roles · INE Veracruz</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/config.js"></script>
+<style>
+:root{--primary:#454248;--primary-dark:#2E2C30;--primary-light:#828A91;--ink:#1C1B1F;--muted:#5F5C63;--line:#E6E1DC;--bg:#F5F3F1;--ok:#16A34A;--warn:#D97706;--danger:#DC2626;--info:#2563EB;--sidebar:260px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+a{text-decoration:none;color:inherit}button{font:inherit;cursor:pointer}
+.sidebar{position:fixed;inset:0 auto 0 0;width:var(--sidebar);z-index:40;background:radial-gradient(140% 80% at 0% 0%,#5A575E 0%,#2E2C30 50%,#1C1B1F 100%);color:#fff;display:flex;flex-direction:column;padding:22px 16px;transition:transform .3s}
+.sb-brand{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:6px 8px 22px;border-bottom:1px solid rgba(255,255,255,.12)}
+.sb-mark{width:150px;height:94px;flex-shrink:0}.sb-mark img{width:100%;height:100%;object-fit:cover;border-radius:10px}
+.sb-brand strong{display:block;font-size:14px}.sb-brand span{font-size:11.5px;opacity:.7}
+.sb-section{font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;opacity:.5;margin:22px 12px 8px}
+.sb-link{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-size:13.5px;font-weight:500;color:rgba(255,255,255,.78);transition:all .2s;margin-bottom:2px}
+.sb-link i{width:18px;text-align:center;font-size:14px}
+.sb-link:hover{background:rgba(255,255,255,.09);color:#fff}
+.sb-link.active{background:rgba(255,255,255,.16);color:#fff;font-weight:600;box-shadow:inset 3px 0 0 #fff}
+.sb-link .count{margin-left:auto;font-size:11px;background:rgba(255,255,255,.18);padding:2px 8px;border-radius:999px}
+.sb-user{margin-top:auto;display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12)}
+.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#C5A989,#fff);color:var(--primary);display:grid;place-items:center;font-weight:800;font-size:13px;flex-shrink:0}
+.sb-user strong{display:block;font-size:13px}.sb-user span{font-size:11px;opacity:.7}.sb-user a{margin-left:auto;opacity:.7}
+.main{margin-left:var(--sidebar);min-height:100vh}
+.topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:16px;padding:16px 32px;background:rgba(247,245,250,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.menu-btn{display:none;border:1px solid var(--line);background:#fff;width:40px;height:40px;border-radius:10px}
+.crumbs{font-size:12.5px;color:var(--muted)}.crumbs b{color:var(--primary)}
+.page-title h1{font-size:20px;font-weight:800;letter-spacing:-.4px}
+.content{padding:28px 32px 40px}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:11px;padding:11px 18px;font-size:13.5px;font-weight:700;transition:all .2s}
+.btn-primary{background:linear-gradient(135deg,var(--primary-light),var(--primary));color:#fff;box-shadow:0 8px 18px -8px rgba(69,66,72,.6)}
+.btn-primary:disabled{opacity:.6;cursor:not-allowed}
+.btn-light{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn-light:hover{border-color:var(--primary);color:var(--primary)}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.sum{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:flex;align-items:center;gap:14px}
+.sum i{width:40px;height:40px;border-radius:11px;display:grid;place-items:center}
+.sum b{font-size:20px;font-weight:800;display:block}.sum span{font-size:12px;color:var(--muted)}
+.c1{background:#F3EDE6;color:var(--primary)}.c2{background:#EEF2FF;color:var(--info)}.c3{background:#ECFDF3;color:var(--ok)}.c4{background:#F1F0F4;color:var(--muted)}
+.notice{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-radius:12px;background:#EEF2FF;border:1px solid #D6DEFF;color:#1E3A8A;font-size:12.5px;line-height:1.6;margin-bottom:18px}
+.notice i{margin-top:3px}
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.role-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-size:12.5px;color:var(--muted);line-height:1.55}
+.role-card b{display:block;color:var(--ink);font-size:13.5px;margin-bottom:4px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px}
+.tools{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.search{flex:1;min-width:220px;display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:11px;padding:0 14px}
+.search:focus-within{border-color:var(--primary)}
+.search i{color:#9A979C;font-size:13px}
+.search input{border:0;outline:0;padding:11px 0;width:100%;font:inherit;font-size:13.5px}
+.select{border:1.5px solid var(--line);border-radius:11px;padding:10px 12px;font:inherit;font-size:13px;background:#fff;outline:0}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700;padding:12px 14px;background:var(--bg);white-space:nowrap}
+th:first-child{border-radius:10px 0 0 10px}th:last-child{border-radius:0 10px 10px 0}
+td{padding:13px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+tr:hover td{background:#FCFBFD}
+.person{display:flex;align-items:center;gap:12px}
+.person .ini{width:36px;height:36px;border-radius:50%;background:#F3EDE6;color:var(--primary);display:grid;place-items:center;font-weight:800;font-size:12px}
+.person small{display:block;color:var(--muted);font-size:12px}
+.tag-yo{font-size:10.5px;font-weight:700;background:var(--ink);color:#fff;padding:2px 7px;border-radius:999px;margin-left:6px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;font-size:12px;font-weight:600}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.r-administrador{background:#F3EDE6;color:var(--primary)}.r-auditor{background:#EEF2FF;color:var(--info)}.r-usuario{background:#ECFDF3;color:var(--ok)}
+.p-ok{background:#ECFDF3;color:var(--ok)}.p-off{background:#F1F0F4;color:var(--muted)}
+.ra{width:32px;height:32px;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--muted);font-size:12.5px}
+.ra:hover{background:var(--ink);color:#fff;border-color:transparent}
+.msg{text-align:center;padding:40px;color:var(--muted);font-size:13px}
+.denied{background:#fff;border:1px solid var(--line);border-radius:18px;padding:50px 20px;text-align:center;color:var(--muted)}
+.denied i{font-size:34px;color:var(--danger);margin-bottom:12px}
+.denied h3{color:var(--ink);margin-bottom:6px}
+.overlay{position:fixed;inset:0;background:rgba(20,17,26,.45);backdrop-filter:blur(4px);z-index:70;display:none;align-items:center;justify-content:center;padding:20px}
+.overlay.show{display:flex}
+.modal{background:#fff;border-radius:20px;width:100%;max-width:480px;max-height:92vh;overflow:auto}
+.modal-head{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--line)}
+.modal-head h3{font-size:17px;font-weight:800}
+.close{border:0;background:var(--bg);width:34px;height:34px;border-radius:10px;color:var(--muted)}
+.modal-body{padding:20px 24px}
+.f{margin-bottom:14px}
+.f label{display:block;font-size:12.5px;font-weight:600;margin-bottom:6px}
+.f input,.f select{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;font:inherit;font-size:13.5px;outline:0;background:#fff}
+.f input:focus,.f select:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(69,66,72,.08)}
+.f input:disabled,.f select:disabled{background:var(--bg);color:#9A979C}
+.f .ro{background:var(--bg);border-radius:10px;padding:11px 12px;font-size:13.5px;color:var(--muted)}
+.check{display:flex;align-items:center;gap:8px;font-size:13px}
+.check input{accent-color:var(--primary);width:16px;height:16px}
+.hint{font-size:12px;color:var(--muted);margin-top:6px}
+.form-error{display:none;margin-top:6px;padding:10px 12px;border-radius:10px;background:#FEF2F2;color:var(--danger);font-size:13px}
+.form-error.show{display:block}
+.modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:16px 24px;border-top:1px solid var(--line)}
+.toast{position:fixed;bottom:24px;right:24px;z-index:80;display:flex;align-items:center;gap:12px;padding:14px 18px;border-radius:12px;background:var(--ink);color:#fff;font-size:13.5px;transform:translateY(20px);opacity:0;pointer-events:none;transition:all .35s;max-width:420px}
+.toast.show{transform:none;opacity:1}.toast i{color:#4ADE80}.toast.err i{color:#F87171}
+@media (max-width:1100px){.summary{grid-template-columns:repeat(2,1fr)}.roles{grid-template-columns:1fr}}
+@media (max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:none}.main{margin-left:0}.menu-btn{display:grid;place-items:center}.content,.topbar{padding-left:18px;padding-right:18px}}
+@media (max-width:560px){.summary{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sb-brand">
+    <div class="sb-mark"><img src="img/logo-ine.png" alt="Logo INE"></div>
+    <div><strong>INE Veracruz</strong><span>Inventario Tecnológico</span></div>
+  </div>
+  <div class="sb-section">General</div>
+  <a href="dashboard.html" class="sb-link"><i class="fas fa-grip"></i>Dashboard</a>
+  <a href="inventario.html" class="sb-link"><i class="fas fa-laptop"></i>Inventario</a>
+  <a href="modulos.html" class="sb-link"><i class="fas fa-building"></i>Módulos</a>
+  <a href="responsables.html" class="sb-link"><i class="fas fa-users"></i>Responsables</a>
+  <div class="sb-section">Gestión</div>
+  <a href="resguardos.html" class="sb-link"><i class="fas fa-file-signature"></i>Resguardos</a>
+  <a href="qr.html" class="sb-link"><i class="fas fa-qrcode"></i>Códigos QR</a>
+  <a href="historial.html" class="sb-link"><i class="fas fa-clock-rotate-left"></i>Historial</a>
+  <a href="reportes.html" class="sb-link"><i class="fas fa-chart-pie"></i>Reportes</a>
+  <div class="sb-section">Sistema</div>
+  <a href="usuarios.html" class="sb-link active"><i class="fas fa-user-shield"></i>Usuarios y roles<span class="count" id="sbCount">0</span></a>
+  <a href="#" class="sb-link" onclick="alert('Configuración en desarrollo.');return false;"><i class="fas fa-gear"></i>Configuración<span class="count">Pronto</span></a>
+  <div class="sb-user">
+    <div class="avatar">—</div>
+    <div><strong>Cargando…</strong><span>Rol: —</span></div>
+    <a href="#" onclick="cerrarSesion()" title="Cerrar sesión"><i class="fas fa-arrow-right-from-bracket"></i></a>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+    <div class="page-title"><div class="crumbs">Sistema / <b>Usuarios y roles</b></div><h1>Usuarios y roles</h1></div>
+  </header>
+
+  <section class="content" id="contenido" style="display:none">
+    <div class="summary">
+      <div class="sum"><i class="fas fa-users c1"></i><div><b id="sTotal">0</b><span>Usuarios registrados</span></div></div>
+      <div class="sum"><i class="fas fa-user-shield c1"></i><div><b id="sAdmin">0</b><span>Administradores</span></div></div>
+      <div class="sum"><i class="fas fa-magnifying-glass-chart c2"></i><div><b id="sAud">0</b><span>Auditores</span></div></div>
+      <div class="sum"><i class="fas fa-user-slash c4"></i><div><b id="sOff">0</b><span>Desactivados</span></div></div>
+    </div>
+
+    <div class="roles">
+      <div class="role-card"><b><i class="fas fa-user-shield" style="color:var(--primary)"></i> Administrador</b>Acceso total: inventario, resguardos, módulos, catálogos y administración de usuarios.</div>
+      <div class="role-card"><b><i class="fas fa-magnifying-glass-chart" style="color:var(--info)"></i> Auditor</b>Solo consulta: puede ver el inventario, historial y reportes, pero no modificar información.</div>
+      <div class="role-card"><b><i class="fas fa-user" style="color:var(--ok)"></i> Usuario</b>Operación diaria: registra y edita activos, responsables y resguardos.</div>
+    </div>
+
+    <div class="notice">
+      <i class="fas fa-circle-info"></i>
+      <div>
+        <b>¿Cómo dar de alta un usuario nuevo?</b> Por seguridad, las cuentas se crean desde el panel de Supabase:
+        <i>Authentication → Users → Add user → Create new user</i> (marca <i>Auto Confirm User</i>).
+        La cuenta aparece aquí con el rol <b>usuario</b>; después asígnale el rol que corresponda.
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="tools">
+        <div class="search"><i class="fas fa-magnifying-glass"></i><input id="q" placeholder="Buscar por nombre o correo…"></div>
+        <select class="select" id="fRol">
+          <option value="">Todos los roles</option>
+          <option value="administrador">Administrador</option>
+          <option value="auditor">Auditor</option>
+          <option value="usuario">Usuario</option>
+        </select>
+        <select class="select" id="fAct"><option value="">Todos</option><option value="1">Activos</option><option value="0">Desactivados</option></select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Usuario</th><th>Rol</th><th>Estado</th><th>Último acceso</th><th>Alta</th><th></th></tr></thead>
+          <tbody id="tbody"><tr><td colspan="6" class="msg"><i class="fas fa-spinner fa-spin"></i> Cargando…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="content" id="sinAcceso" style="display:none">
+    <div class="denied">
+      <i class="fas fa-lock"></i>
+      <h3>Acceso restringido</h3>
+      <p>Solo el administrador del sistema puede gestionar usuarios y roles.</p>
+    </div>
+  </section>
+</div>
+
+<div class="overlay" id="mForm">
+  <div class="modal">
+    <div class="modal-head">
+      <h3><i class="fas fa-user-pen" style="color:var(--primary);margin-right:8px"></i>Editar usuario</h3>
+      <button class="close" type="button" onclick="cerrarForm()"><i class="fas fa-xmark"></i></button>
+    </div>
+    <form id="form" novalidate>
+      <div class="modal-body">
+        <div class="f"><label>Correo</label><div class="ro" id="uEmail">—</div></div>
+        <div class="f"><label>Nombre para mostrar</label><input id="uNombre" maxlength="80" placeholder="Nombre completo"></div>
+        <div class="f"><label>Rol</label>
+          <select id="uRol">
+            <option value="administrador">Administrador</option>
+            <option value="auditor">Auditor</option>
+            <option value="usuario">Usuario</option>
+          </select>
+        </div>
+        <div class="f"><label class="check"><input type="checkbox" id="uActivo"> Cuenta activa</label>
+          <p class="hint" id="uHint"></p>
+        </div>
+        <div class="form-error" id="fError"></div>
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-light" onclick="cerrarForm()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" id="btnGuardar"><i class="fas fa-check"></i>Guardar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i class="fas fa-circle-check"></i><span id="toastMsg"></span></div>
+
+<script>
+const $ = s => document.querySelector(s);
+let perfil = null, usuarios = [], editId = null;
+const ROL = { administrador: 'Administrador', auditor: 'Auditor', usuario: 'Usuario' };
+const iniciales = n => (n || '?').split(/[\s@.]+/).filter(Boolean).map(x => x[0]).join('').slice(0, 2).toUpperCase();
+const fmtFecha = d => d ? new Date(d).toLocaleString('es-MX', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Nunca';
+const fmtDia = d => d ? new Date(d).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+
+function toast(msg, err = false) {
+  $('#toastMsg').textContent = msg;
+  $('#toast i').className = err ? 'fas fa-circle-exclamation' : 'fas fa-circle-check';
+  $('#toast').classList.toggle('err', err);
+  $('#toast').classList.add('show');
+  setTimeout(() => $('#toast').classList.remove('show'), 3200);
+}
+
+/* ============ CARGA ============ */
+async function cargar() {
+  const { data, error } = await db.rpc('listar_usuarios');
+  if (error) {
+    console.error(error);
+    $('#tbody').innerHTML = `<tr><td colspan="6" class="msg" style="color:var(--danger)">No se pudieron cargar los usuarios: ${esc(error.message)}</td></tr>`;
+    return;
+  }
+  usuarios = data || [];
+  $('#sTotal').textContent = usuarios.length;
+  $('#sAdmin').textContent = usuarios.filter(u => u.rol === 'administrador' && u.activo).length;
+  $('#sAud').textContent = usuarios.filter(u => u.rol === 'auditor' && u.activo).length;
+  $('#sOff').textContent = usuarios.filter(u => !u.activo).length;
+  $('#sbCount').textContent = usuarios.filter(u => u.activo).length;
+  render();
+}
+
+/* ============ TABLA ============ */
+function render() {
+  const q = $('#q').value.toLowerCase(), fr = $('#fRol').value, fa = $('#fAct').value;
+  const rows = usuarios.filter(u =>
+    (!fr || u.rol === fr) &&
+    (fa === '' || u.activo === (fa === '1')) &&
+    (!q || [u.nombre, u.email].join(' ').toLowerCase().includes(q)));
+
+  if (!usuarios.length) { $('#tbody').innerHTML = '<tr><td colspan="6" class="msg">No hay usuarios registrados.</td></tr>'; return; }
+  if (!rows.length) { $('#tbody').innerHTML = '<tr><td colspan="6" class="msg">No hay coincidencias.</td></tr>'; return; }
+
+  $('#tbody').innerHTML = rows.map(u => `
+    <tr>
+      <td><div class="person"><div class="ini">${esc(iniciales(u.nombre || u.email))}</div>
+        <div><b>${esc(u.nombre || 'Sin nombre')}</b>${u.id === perfil.id ? '<span class="tag-yo">Tú</span>' : ''}<small>${esc(u.email)}</small></div></div></td>
+      <td><span class="pill r-${esc(u.rol)}">${esc(ROL[u.rol] || u.rol)}</span></td>
+      <td><span class="pill ${u.activo ? 'p-ok' : 'p-off'}">${u.activo ? 'Activo' : 'Desactivado'}</span></td>
+      <td>${fmtFecha(u.ultimo_acceso)}</td>
+      <td>${fmtDia(u.creado)}</td>
+      <td><button class="ra" title="Editar" onclick="abrirForm('${u.id}')"><i class="fas fa-pen"></i></button></td>
+    </tr>`).join('');
+}
+
+/* ============ FORMULARIO ============ */
+function abrirForm(id) {
+  const u = usuarios.find(x => x.id === id); if (!u) return;
+  editId = id;
+  const esYo = id === perfil.id;
+  $('#fError').classList.remove('show');
+  $('#uEmail').textContent = u.email;
+  $('#uNombre').value = u.nombre || '';
+  $('#uRol').value = u.rol;
+  $('#uActivo').checked = u.activo;
+  $('#uRol').disabled = esYo;
+  $('#uActivo').disabled = esYo;
+  $('#uHint').textContent = esYo
+    ? 'Es tu propia cuenta: no puedes cambiar tu rol ni desactivarla.'
+    : 'Una cuenta desactivada no puede iniciar sesión ni consultar o modificar información.';
+  $('#mForm').classList.add('show');
+  setTimeout(() => $('#uNombre').focus(), 100);
+}
+function cerrarForm() { $('#mForm').classList.remove('show'); }
+
+$('#form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const errBox = $('#fError'); errBox.classList.remove('show');
+  const u = usuarios.find(x => x.id === editId);
+  const nombre = $('#uNombre').value.trim().replace(/\s+/g, ' ');
+  const rol = $('#uRol').value, activo = $('#uActivo').checked;
+
+  if (!nombre) { errBox.textContent = 'Escribe el nombre del usuario.'; errBox.classList.add('show'); return; }
+  if (u.activo && !activo && !confirm(`¿Desactivar la cuenta de ${u.email}? Ya no podrá entrar al sistema.`)) return;
+
+  const btn = $('#btnGuardar'); btn.disabled = true;
+  const { error } = await db.rpc('actualizar_usuario', { p_id: editId, p_nombre: nombre, p_rol: rol, p_activo: activo });
+  btn.disabled = false;
+
+  if (error) {
+    console.error(error);
+    errBox.textContent = error.message || 'No se pudo guardar.';
+    errBox.classList.add('show');
+    return;
+  }
+  cerrarForm();
+  await cargar();
+  toast(`Usuario ${u.email} actualizado`);
+});
+
+['#q', '#fRol', '#fAct'].forEach(s => $(s).addEventListener('input', render));
+$('#mForm').addEventListener('click', e => { if (e.target.id === 'mForm') cerrarForm(); });
+$('#menuBtn').addEventListener('click', () => $('#sidebar').classList.toggle('open'));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarForm(); });
+
+(async function init() {
+  perfil = await iniciarPagina();
+  if (!perfil) return;
+  if (perfil.rol !== 'administrador') { $('#sinAcceso').style.display = 'block'; return; }
+  $('#contenido').style.display = 'block';
+  await cargar();
+})();
+</script>
+</body>
+</html>

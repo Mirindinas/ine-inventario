@@ -9,13 +9,13 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 <style>
 :root{
-  --primary:#B0124E;
-  --primary-dark:#7A0C36;
-  --primary-light:#E8417F;
-  --ink:#14111A;
-  --muted:#6B6475;
-  --line:#E7E3EC;
-  --bg:#F7F5FA;
+  --primary:#454248;
+  --primary-dark:#2E2C30;
+  --primary-light:#828A91;
+  --ink:#1C1B1F;
+  --muted:#5F5C63;
+  --line:#E6E1DC;
+  --bg:#F5F3F1;
   --white:#FFFFFF;
   --ok:#16A34A;
   --danger:#DC2626;
@@ -36,12 +36,13 @@ body{
   flex:1.15;
   position:relative;
   overflow:hidden;
-  background:linear-gradient(135deg, rgba(176,18,78,.72) 0%, rgba(122,12,54,.68) 45%, rgba(42,6,20,.82) 100%), url('img/imagen_ine_fondo_index.jpg') center / cover no-repeat;
+  background:linear-gradient(135deg, #5A575E 0%, #2E2C30 55%, #1C1B1F 100%);
   color:#fff;
   padding:56px 64px;
   display:flex;
   flex-direction:column;
-  justify-content:space-between;
+  justify-content:center;
+  gap:48px;
 }
 /* Rejilla sutil */
 .hero::before{
@@ -56,40 +57,22 @@ body{
 }
 /* Orbes animados */
 .orb{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55;animation:float 14s ease-in-out infinite}
-.orb.o1{width:380px;height:380px;background:#FF4F8B;top:-120px;right:-80px}
-.orb.o2{width:300px;height:300px;background:#6D28D9;bottom:-100px;left:-60px;animation-delay:-5s}
-.orb.o3{width:200px;height:200px;background:#F59E0B;bottom:30%;right:15%;opacity:.25;animation-delay:-9s}
+.orb.o1{width:380px;height:380px;background:#C5A989;top:-120px;right:-80px;opacity:.35}
+.orb.o2{width:300px;height:300px;background:#828A91;bottom:-100px;left:-60px;animation-delay:-5s}
+.orb.o3{width:200px;height:200px;background:#B2B2B2;bottom:30%;right:15%;opacity:.25;animation-delay:-9s}
 @keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,-25px)}}
 
 .hero > *{position:relative;z-index:2}
 
 .brand{display:flex;align-items:center;gap:14px}
-.brand-mark{
-  width:64px;height:64px;border-radius:0;background:none !important;border:0 !important;
-  background:rgba(255,255,255,.14);
-  border:1px solid rgba(255,255,255,.28);
-  backdrop-filter:blur(8px);
-  display:grid;place-items:center;
-  font-weight:800;font-size:15px;letter-spacing:.5px;
-}
+.brand-mark{width:150px;height:94px;flex-shrink:0}
+.brand-mark img{width:100%;height:100%;object-fit:cover;border-radius:12px}
 .brand-text strong{display:block;font-size:15px;font-weight:700;letter-spacing:.5px}
-.brand-mark img{width:100%;height:100%;object-fit:contain;padding:6px}
 .brand-text span{font-size:12px;opacity:.7}
 
 .hero-body{max-width:520px}
-.chip{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:7px 14px;border-radius:999px;
-  background:rgba(255,255,255,.12);
-  border:1px solid rgba(255,255,255,.22);
-  font-size:12px;font-weight:600;letter-spacing:.3px;
-  margin-bottom:22px;
-}
-.chip .dot{width:8px;height:8px;border-radius:50%;background:#4ADE80;box-shadow:0 0 0 4px rgba(74,222,128,.25);animation:pulse 2s infinite}
-@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(74,222,128,0)}}
-
 .hero h1{font-size:42px;line-height:1.12;font-weight:800;letter-spacing:-1px;margin-bottom:16px}
-.hero h1 em{font-style:normal;background:linear-gradient(90deg,#FFD1E3,#FFFFFF);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,#C5A989,#FFFFFF);-webkit-background-clip:text;background-clip:text;color:transparent}
 .hero p.lead{font-size:15px;line-height:1.65;opacity:.78;margin-bottom:34px}
 
 .features{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -110,10 +93,6 @@ body{
 .feature b{display:block;font-size:13px;font-weight:700}
 .feature small{font-size:11.5px;opacity:.7}
 
-.stats{display:flex;gap:28px;padding-top:26px;border-top:1px solid rgba(255,255,255,.15)}
-.stat b{display:block;font-size:26px;font-weight:800;letter-spacing:-.5px}
-.stat span{font-size:12px;opacity:.7}
-
 /* ================= PANEL DERECHO ================= */
 .auth{
   width:520px;
@@ -128,17 +107,6 @@ body{
 .auth h2{font-size:28px;font-weight:800;letter-spacing:-.6px;margin-bottom:8px}
 .auth .sub{color:var(--muted);font-size:14px;margin-bottom:32px;line-height:1.55}
 
-/* Selector de rol */
-.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:5px;background:var(--bg);border-radius:12px;margin-bottom:26px}
-.roles input{display:none}
-.roles label{
-  text-align:center;padding:9px 6px;border-radius:9px;
-  font-size:12.5px;font-weight:600;color:var(--muted);
-  cursor:pointer;transition:all .2s;
-}
-.roles label i{margin-right:5px}
-.roles input:checked + label{background:var(--white);color:var(--primary);box-shadow:0 2px 8px rgba(20,17,26,.08)}
-
 .field{margin-bottom:18px}
 .field label{display:block;font-size:13px;font-weight:600;margin-bottom:7px}
 .control{
@@ -146,23 +114,21 @@ body{
   border:1.5px solid var(--line);border-radius:12px;
   background:#fff;transition:border-color .2s, box-shadow .2s;
 }
-.control:focus-within{border-color:var(--primary);box-shadow:0 0 0 4px rgba(176,18,78,.10)}
+.control:focus-within{border-color:var(--primary);box-shadow:0 0 0 4px rgba(69,66,72,.10)}
 .control.error{border-color:var(--danger);box-shadow:0 0 0 4px rgba(220,38,38,.08)}
-.control > i{position:absolute;left:15px;color:#A39CAD;font-size:14px;transition:color .2s}
+.control > i{position:absolute;left:15px;color:#9A979C;font-size:14px;transition:color .2s}
 .control:focus-within > i{color:var(--primary)}
 .control input{
   width:100%;border:0;outline:0;background:transparent;
   padding:14px 44px 14px 42px;font:inherit;font-size:14px;color:var(--ink);
 }
-.control input::placeholder{color:#B5AFBE}
-.toggle{position:absolute;right:12px;background:none;border:0;color:#A39CAD;cursor:pointer;padding:6px;font-size:14px}
+.control input::placeholder{color:#AAA6AD}
+.toggle{position:absolute;right:12px;background:none;border:0;color:#9A979C;cursor:pointer;padding:6px;font-size:14px}
 .toggle:hover{color:var(--primary)}
 .hint{font-size:12px;color:var(--danger);margin-top:6px;display:none}
 .hint.show{display:block}
 
-.row{display:flex;justify-content:space-between;align-items:center;margin:4px 0 26px}
-.check{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer}
-.check input{width:16px;height:16px;accent-color:var(--primary)}
+.row{display:flex;justify-content:flex-end;align-items:center;margin:4px 0 26px}
 .link{font-size:13px;font-weight:600;color:var(--primary);text-decoration:none}
 .link:hover{text-decoration:underline}
 
@@ -170,14 +136,14 @@ body{
   width:100%;border:0;cursor:pointer;
   padding:15px;border-radius:12px;
   font:inherit;font-size:15px;font-weight:700;color:#fff;
-  background:linear-gradient(135deg,var(--primary-light) 0%,var(--primary) 50%,var(--primary-dark) 100%);
-  background-size:200% 200%;
-  box-shadow:0 10px 24px -8px rgba(176,18,78,.55);
+  background:linear-gradient(135deg, #5A575E 0%, #2E2C30 55%, #1C1B1F 100%);  background-size:200% 200%;
+  box-shadow:0 10px 24px -8px rgba(69,66,72,.55);
   transition:transform .15s, box-shadow .25s, background-position .4s;
   display:flex;align-items:center;justify-content:center;gap:10px;
 }
-.btn:hover{background-position:100% 0;transform:translateY(-1px);box-shadow:0 14px 30px -8px rgba(176,18,78,.65)}
+.btn:hover{background-position:100% 0;transform:translateY(-1px);box-shadow:0 14px 30px -8px rgba(69,66,72,.65)}
 .btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.75;cursor:wait}
 .btn .spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none}
 .btn.loading .spinner{display:block}
 .btn.loading .label{opacity:.85}
@@ -209,12 +175,12 @@ body{
 @media (max-width:1100px){.hero{padding:44px}.hero h1{font-size:34px}.auth{width:460px;padding:48px}}
 @media (max-width:900px){
   body{flex-direction:column}
-  .hero{padding:32px 28px;flex:none}
-  .hero-body .features,.stats{display:none}
+  .hero{padding:32px 28px;flex:none;gap:24px}
+  .hero-body .features{display:none}
+  .hero p.lead{margin-bottom:0}
   .hero h1{font-size:28px}
   .auth{width:100%;padding:36px 24px}
 }
-
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/config.js"></script>
@@ -228,13 +194,12 @@ body{
   <div class="brand">
     <div class="brand-mark"><img src="img/logo-ine.png" alt="Logo INE"></div>
     <div class="brand-text">
-      <strong>INSTITUTO NACIONAL ELECTORAL</strong>
+      <strong>JUNTA LOCAL EJECUTIVA</strong>
       <span>Estado de Veracruz</span>
     </div>
   </div>
 
   <div class="hero-body">
-    
     <h1>Control total de tu<br><em>inventario tecnológico</em></h1>
     <p class="lead">Centraliza el registro, la asignación y los resguardos digitales del equipo de cómputo de los Módulos de Atención Ciudadana desde cualquier lugar.</p>
 
@@ -245,25 +210,13 @@ body{
       <div class="feature"><i class="fas fa-user-shield"></i><div><b>Acceso por roles</b><small>Conforme a la LGPDPPSO</small></div></div>
     </div>
   </div>
-
-  <div class="stats">
-    <div class="stat"><b data-count="67">0</b><span>Módulos</span></div>
-    <div class="stat"><b data-count="1409">0</b><span>Activos</span></div>
-    <div class="stat"><b data-count="205">0</b><span>Estaciones</span></div>
-  </div>
 </section>
 
 <!-- ============ PANEL DERECHO ============ -->
 <main class="auth">
   <div class="auth-inner">
     <h2>Iniciar sesión</h2>
-    <p class="sub">Ingresa con tu cuenta institucional para acceder al Sistema de Inventario Tecnológico.</p>
-
-    <div class="roles">
-      <input type="radio" name="rol" id="r1" checked><label for="r1"><i class="fas fa-user-gear"></i>Admin</label>
-      <input type="radio" name="rol" id="r2"><label for="r2"><i class="fas fa-magnifying-glass"></i>Auditor</label>
-      <input type="radio" name="rol" id="r3"><label for="r3"><i class="fas fa-user"></i>Usuario</label>
-    </div>
+    <p class="sub">Ingresa con tu cuenta institucional para acceder al Sistema de Inventario Tecnológico. Tus permisos se asignan automáticamente según el rol de tu cuenta.</p>
 
     <form id="loginForm" novalidate>
       <div class="field">
@@ -286,8 +239,7 @@ body{
       </div>
 
       <div class="row">
-        <label class="check"><input type="checkbox"> Recordar sesión</label>
-        <a href="#" class="link">¿Olvidaste tu contraseña?</a>
+        <a href="#" class="link" id="lnkOlvido">¿Olvidaste tu contraseña?</a>
       </div>
 
       <button type="submit" class="btn" id="btnLogin">
@@ -312,6 +264,25 @@ body{
 <div class="toast" id="toast"><i class="fas fa-circle-check"></i><span>Acceso concedido. Redirigiendo…</span></div>
 
 <script>
+const btn = document.getElementById('btnLogin');
+const hPass = document.getElementById('hPass');
+
+function restablecerBoton() {
+  btn.classList.remove('loading');
+  btn.disabled = false;
+  btn.querySelector('.label').textContent = 'Ingresar al sistema';
+}
+function mostrarError(msg) {
+  document.getElementById('cPass').classList.add('error');
+  hPass.textContent = msg;
+  hPass.classList.add('show');
+}
+
+// Si ya hay una sesión abierta, entra directo al sistema
+db.auth.getSession().then(({ data: { session } }) => {
+  if (session) location.href = 'dashboard.html';
+});
+
 // Mostrar / ocultar contraseña
 document.getElementById('togglePass').addEventListener('click', function(){
   const p = document.getElementById('pass');
@@ -321,15 +292,10 @@ document.getElementById('togglePass').addEventListener('click', function(){
   i.className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
 });
 
-// Contadores animados
-document.querySelectorAll('[data-count]').forEach(el=>{
-  const target = +el.dataset.count, dur = 1400, start = performance.now();
-  const step = t=>{
-    const k = Math.min((t-start)/dur,1), e = 1-Math.pow(1-k,3);
-    el.textContent = Math.round(target*e).toLocaleString('es-MX');
-    if(k<1) requestAnimationFrame(step);
-  };
-  requestAnimationFrame(step);
+// ¿Olvidaste tu contraseña?
+document.getElementById('lnkOlvido').addEventListener('click', e => {
+  e.preventDefault();
+  alert('Para restablecer tu contraseña, comunícate con el administrador del sistema en el área de Tecnologías de la Información.');
 });
 
 // Inicio de sesión con Supabase
@@ -343,24 +309,31 @@ document.getElementById('loginForm').addEventListener('submit', async function (
   document.getElementById('cEmail').classList.toggle('error', !okEmail);
   document.getElementById('hEmail').classList.toggle('show', !okEmail);
   document.getElementById('cPass').classList.toggle('error', !okPass);
-  const hPass = document.getElementById('hPass');
   hPass.textContent = 'La contraseña debe tener al menos 6 caracteres.';
   hPass.classList.toggle('show', !okPass);
   if (!okEmail || !okPass) return;
 
-  const btn = document.getElementById('btnLogin');
   btn.classList.add('loading');
+  btn.disabled = true;
   btn.querySelector('.label').textContent = 'Verificando…';
 
-  const { error } = await db.auth.signInWithPassword({ email, password: pass });
+  const { data, error } = await db.auth.signInWithPassword({ email, password: pass });
 
   if (error) {
-    btn.classList.remove('loading');
-    btn.querySelector('.label').textContent = 'Ingresar al sistema';
-    document.getElementById('cPass').classList.add('error');
     console.error(error);
-    hPass.textContent = 'Error: ' + error.message;
-    hPass.classList.add('show');
+    restablecerBoton();
+    mostrarError(error.message === 'Invalid login credentials'
+      ? 'Correo o contraseña incorrectos.'
+      : 'No se pudo iniciar sesión: ' + error.message);
+    return;
+  }
+
+  // Verificar que la cuenta esté activa
+  const { data: p } = await db.from('perfiles').select('activo').eq('id', data.user.id).maybeSingle();
+  if (p && p.activo === false) {
+    await db.auth.signOut();
+    restablecerBoton();
+    mostrarError('Tu cuenta está desactivada. Comunícate con el administrador del sistema.');
     return;
   }
 
